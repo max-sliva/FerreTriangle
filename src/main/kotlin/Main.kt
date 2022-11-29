@@ -22,7 +22,6 @@ class FerreTriangelApp : Application() {
             Platform.exit()
             exitProcess(0)
         }
-
     }
     companion object { //специальный объект для запуска проекта в рамках фреймворка JavaFX
         @JvmStatic // его всегда оставляем одинаковым для всех проектов
