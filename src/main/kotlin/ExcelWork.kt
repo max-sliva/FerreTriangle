@@ -12,6 +12,7 @@ import kotlin.system.exitProcess
 
 class ExcelWork(val file: File) {
     private var contedRows = 0
+    private var ferreArray= ArrayList<ObjectForFerre>()
     fun printExcelFileToConsole(){
         if (file.extension=="xlsx") {
             val file = FileInputStream(file)
