@@ -2,6 +2,7 @@ import javafx.fxml.Initializable
 import javafx.scene.Cursor
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
+import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Polygon
 import java.net.URL
@@ -17,32 +18,48 @@ class FerreFrame: Initializable {
     private var mouseOffsetFromNodeZeroX = 0.0
     private var mouseOffsetFromNodeZeroY = 0.0
     lateinit var polygon : Polygon
+    var curX = 0.0
+    var curY = 0.0
+    var xAfterStop = 0.0
+    var yAfterStop = 0.0
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
         movingDot.cursor = Cursor.MOVE
-        println("triangle points = ${ boundTriangle.points}")
+        println("triangle points = ${ polygon.points}")
 //        println("triangle bounds = ${ boundTriangle.}")
     }
     fun moveDot(mouseEvent: MouseEvent) {
 //        if (!movingDot.intersects(polygon.boundsInParent))
-        movingDot.translateX = mouseEvent.sceneX - anchorX
-        movingDot.translateY = mouseEvent.sceneY - anchorY
-        val curX = movingDot.layoutX+movingDot.translateX
-        val curY = movingDot.layoutY+movingDot.translateY
         // уравнение левой стороны треугольника: y = -1.73x + 574
-//        if (polygon.intersects(curX, curY, 1.0, 1.0))
-//            println("Intersection!!")
-        println("dot x = ${curX} dot y = ${curY}")
-//        if (curX in boundTriangle.points)
-//            println("In triangle")
+        curX = movingDot.layoutX+mouseEvent.sceneX - anchorX
+        curY = movingDot.layoutY+mouseEvent.sceneY - anchorY
+        //todo добавить условия для остальных сторон треугольника
+        if (curY >= (-1.73*curX+574)){ // если двигаем точку внутри треугольника
+            movingDot.translateX = mouseEvent.sceneX - anchorX
+            movingDot.translateY = mouseEvent.sceneY - anchorY
+            println("moving dot x = ${mouseEvent.sceneX}")
+            xAfterStop = curX
+        }
+        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
+            xAfterStop = mouseEvent.sceneX
+        } else {  //если точка за пределами треугольника
+            movingDot.layoutX = (curY-574) / (-1.73)
+            xAfterStop = movingDot.layoutX
+            movingDot.translateX = 0.0
+            movingDot.translateY = mouseEvent.sceneY - anchorY
+            println("xAfterStop = $xAfterStop")
+        }
     }
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
-        movingDot.layoutX = mouseEvent.sceneX - mouseOffsetFromNodeZeroX
+        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
+            movingDot.layoutX = xAfterStop
+        }
+        else movingDot.layoutX = mouseEvent.sceneX - mouseOffsetFromNodeZeroX
         movingDot.layoutY = mouseEvent.sceneY - mouseOffsetFromNodeZeroY
         //clear changes from TranslateX and TranslateY
-        movingDot.translateX = 0.0;
-        movingDot.translateY = 0.0;
+        movingDot.translateX = 0.0
+        movingDot.translateY = 0.0
         movingDot.cursor = Cursor.HAND
     }
 
@@ -60,6 +77,7 @@ class FerreFrame: Initializable {
                 492.0, 347.0
             )
         )
+        polygon.fill = Color.TRANSPARENT
         anchorPane.children.add(polygon)
         println("triangle points = ${ polygon.points}")
         movingDot.toFront()
