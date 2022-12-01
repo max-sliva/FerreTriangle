@@ -8,10 +8,10 @@ import javafx.scene.shape.Polygon
 import java.net.URL
 import java.util.*
 
-
+//исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
     lateinit var anchorPane: AnchorPane
-    lateinit var boundTriangle: Polygon
+//    lateinit var boundTriangle: Polygon
     lateinit var movingDot: Circle
     private var anchorX = 0.0
     private var anchorY = 0.0
@@ -27,10 +27,8 @@ class FerreFrame: Initializable {
         anchorY = mouseEvent.sceneY
         movingDot.cursor = Cursor.MOVE
         println("triangle points = ${ polygon.points}")
-//        println("triangle bounds = ${ boundTriangle.}")
     }
     fun moveDot(mouseEvent: MouseEvent) {
-//        if (!movingDot.intersects(polygon.boundsInParent))
         // уравнение левой стороны треугольника: y = -1.73x + 574
         curX = movingDot.layoutX+mouseEvent.sceneX - anchorX
         curY = movingDot.layoutY+mouseEvent.sceneY - anchorY
@@ -72,12 +70,14 @@ class FerreFrame: Initializable {
         polygon = Polygon()
         polygon.points.addAll(
             *arrayOf(
-                314.0, 34.0,
-                133.0, 347.0,
-                492.0, 347.0
+                313.0, 34.0,
+                132.0, 346.0,
+                493.0, 346.0
             )
         )
         polygon.fill = Color.TRANSPARENT
+        polygon.stroke = Color.BLUE
+        polygon.strokeWidth = 4.0
         anchorPane.children.add(polygon)
         println("triangle points = ${ polygon.points}")
         movingDot.toFront()

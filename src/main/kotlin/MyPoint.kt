@@ -1,0 +1,1 @@
+data class MyPoint (val x: Double, val y: Double)
