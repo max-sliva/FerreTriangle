@@ -22,6 +22,7 @@ class FerreFrame: Initializable {
     var curY = 0.0
     var xAfterStop = 0.0
     var yAfterStop = 0.0
+    lateinit var myTriangle: MyPolyline
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
@@ -32,7 +33,7 @@ class FerreFrame: Initializable {
         // уравнение левой стороны треугольника: y = -1.73x + 574
         curX = movingDot.layoutX+mouseEvent.sceneX - anchorX
         curY = movingDot.layoutY+mouseEvent.sceneY - anchorY
-        //todo добавить условия для остальных сторон треугольника
+        //todo проверять myTriangle на принадлежность точки (curX, curY)
         if (curY >= (-1.73*curX+574)){ // если двигаем точку внутри треугольника
             movingDot.translateX = mouseEvent.sceneX - anchorX
             movingDot.translateY = mouseEvent.sceneY - anchorY
@@ -79,8 +80,18 @@ class FerreFrame: Initializable {
         polygon.stroke = Color.BLUE
         polygon.strokeWidth = 4.0
         anchorPane.children.add(polygon)
-        println("triangle points = ${ polygon.points}")
+        var myPoints = ArrayList<MyPoint>()
+        var j = 0
+        var myPoint: MyPoint
+        for (i in 0..4 step 2){
+            myPoints.add(MyPoint(polygon.points[i], polygon.points[i+1]))
+            println("added to myPoints ${polygon.points[i]}, ${polygon.points[i+1]}")
+        }
+        myTriangle = MyPolyline(myPoints.toTypedArray())
+        println("polygon points = ${ polygon.points}")
+        println("myTriangle points = $myTriangle")
         movingDot.toFront()
-
+        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
+        println("myPoint inside is $isInside")
     }
 }
