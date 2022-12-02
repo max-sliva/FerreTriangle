@@ -4,12 +4,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FerreFrame">
+<AnchorPane fx:id="anchorPane" prefHeight="513.0" prefWidth="708.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FerreFrame">
    <children>
-      <ImageView fx:id="ferreImageView" fitHeight="460.0" fitWidth="684.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../ferre2.png" />
-         </image>
+      <ImageView fx:id="ferreImageView" pickOnBounds="true" preserveRatio="true">
+<!--         <image>-->
+<!--            <Image url="@../../../ferre2.png" />-->
+<!--         </image>-->
       </ImageView>
 <!--      <Polygon fx:id="boundTriangle" fill="#74b7f200" layoutX="302.0" layoutY="197.0" opacity="0.0" points="-170.0, 149.0, 191.0, 149.0, 10.0, -164.0" stroke="TRANSPARENT" strokeType="INSIDE" strokeWidth="0.0" />-->
       <Circle fx:id="movingDot" fill="#ff7d1f" layoutX="303.0" layoutY="191.0" onMouseDragged="#moveDot" onMouseEntered="#mouseEnteredDot" onMousePressed="#mousePressedDot" onMouseReleased="#mouseReleasedDot" radius="5.0" stroke="BLACK" strokeType="INSIDE" />

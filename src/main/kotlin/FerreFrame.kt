@@ -1,16 +1,21 @@
 import javafx.fxml.Initializable
 import javafx.scene.Cursor
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Polygon
+import java.io.File
 import java.net.URL
+import java.nio.file.Paths
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
+    lateinit var ferreImageView: ImageView
     lateinit var anchorPane: AnchorPane
 //    lateinit var boundTriangle: Polygon
     lateinit var movingDot: Circle
@@ -62,9 +67,10 @@ class FerreFrame: Initializable {
         }
     }
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
-        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
+//        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
+        if (myTriangle.sideOutOfPoint(MyPoint(curX, curY)).size == 2) { //если остановились за пределами треугольника
             movingDot.layoutX = xAfterStop
-        }
+        } //todo разобраться с точкой после отпускания мыши
         else movingDot.layoutX = mouseEvent.sceneX - mouseOffsetFromNodeZeroX
         movingDot.layoutY = mouseEvent.sceneY - mouseOffsetFromNodeZeroY
         //clear changes from TranslateX and TranslateY
@@ -78,15 +84,32 @@ class FerreFrame: Initializable {
     }
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        println("pane width = ${anchorPane.maxWidth}  pane height = ${anchorPane.prefHeight}")
+        println("pane width = ${anchorPane.prefWidth}  pane height = ${anchorPane.prefHeight}")
         polygon = Polygon()
-        polygon.points.addAll(
-            *arrayOf(
-                313.0, 34.0,
-                132.0, 346.0,
-                493.0, 346.0
-            )
-        )
+        val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
+        println("path = $currentPath")
+        ferreImageView.image = Image("file:$currentPath/ferre2.png")
+        val image = ferreImageView.image
+        println("image width = ${image.width}  image height = ${image.height}")
+        println("image width2 = ${image.widthProperty()}  image height2 = ${image.heightProperty()}")
+        for (x in 0 until image.width.toInt()) { //в циклах ищем красные точки, чтоб их добавить к полигону
+            for (y in 0 until image.height.toInt()) {
+                val r = image.pixelReader
+                val argb = r.getColor(x, y)
+                if (argb == Color.RED) {
+                    println("$argb $x  $y")
+                    polygon.points.add(x.toDouble())
+                    polygon.points.add(y.toDouble())
+                }
+            }
+        }
+//        polygon.points.addAll(
+//            *arrayOf(
+//                313.0, 34.0,
+//                132.0, 346.0,
+//                493.0, 346.0
+//            )
+//        )
         polygon.fill = Color.TRANSPARENT
         polygon.stroke = Color.BLUE
         polygon.strokeWidth = 4.0
@@ -101,9 +124,14 @@ class FerreFrame: Initializable {
         myTriangle = MyPolyline(myPoints.toTypedArray())
         println("polygon points = ${ polygon.points}")
         println("myTriangle points = $myTriangle")
+        movingDot.layoutY = polygon.points[3]+50
+        movingDot.layoutX = polygon.points[2]
         movingDot.toFront()
+
         val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
         println("myPoint inside is $isInside")
         //todo добавить линии от точки к сторонам треугольника
+
+
     }
 }
