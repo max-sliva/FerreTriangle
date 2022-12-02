@@ -33,8 +33,8 @@ class FerreFrame: Initializable {
         // уравнение левой стороны треугольника: y = -1.73x + 574
         curX = movingDot.layoutX+mouseEvent.sceneX - anchorX
         curY = movingDot.layoutY+mouseEvent.sceneY - anchorY
-        //todo проверять myTriangle на принадлежность точки (curX, curY)
-        if (curY >= (-1.73*curX+574)){ // если двигаем точку внутри треугольника
+//        if (curY >= (-1.73*curX+574)){ // если двигаем точку внутри треугольника
+        if (myTriangle.isPointInside(MyPoint(curX, curY))) {
             movingDot.translateX = mouseEvent.sceneX - anchorX
             movingDot.translateY = mouseEvent.sceneY - anchorY
             println("moving dot x = ${mouseEvent.sceneX}")
