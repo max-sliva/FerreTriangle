@@ -7,6 +7,7 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.Polygon
 import java.net.URL
 import java.util.*
+import kotlin.collections.ArrayList
 
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
@@ -23,6 +24,7 @@ class FerreFrame: Initializable {
     var xAfterStop = 0.0
     var yAfterStop = 0.0
     lateinit var myTriangle: MyPolyline
+    var sidePoints = ArrayList<MyPoint>()
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
@@ -31,8 +33,8 @@ class FerreFrame: Initializable {
     }
     fun moveDot(mouseEvent: MouseEvent) {
         // уравнение левой стороны треугольника: y = -1.73x + 574
-        curX = movingDot.layoutX+mouseEvent.sceneX - anchorX
-        curY = movingDot.layoutY+mouseEvent.sceneY - anchorY
+        curX = movingDot.layoutX + mouseEvent.sceneX - anchorX
+        curY = movingDot.layoutY + mouseEvent.sceneY - anchorY
 //        if (curY >= (-1.73*curX+574)){ // если двигаем точку внутри треугольника
         if (myTriangle.isPointInside(MyPoint(curX, curY))) {
             movingDot.translateX = mouseEvent.sceneX - anchorX
@@ -40,14 +42,23 @@ class FerreFrame: Initializable {
             println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
         }
-        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
+
+//        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
+        else if (myTriangle.sideWithPoint(MyPoint(curX, curY)).size == 2){
             xAfterStop = mouseEvent.sceneX
-        } else {  //если точка за пределами треугольника
-            movingDot.layoutX = (curY-574) / (-1.73)
-            xAfterStop = movingDot.layoutX
-            movingDot.translateX = 0.0
-            movingDot.translateY = mouseEvent.sceneY - anchorY
-            println("xAfterStop = $xAfterStop")
+//            sidePoints = myTriangle.sideWithPoint(MyPoint(curX, curY))
+            println("on side!!!")
+        }
+        else if (myTriangle.sideOutOfPoint(MyPoint(curX, curY)).size == 2){  //если курсор выходит за пределы треугольника
+            sidePoints = myTriangle.sideOutOfPoint(MyPoint(curX, curY))
+             println("side = ${Arrays.toString(sidePoints.toArray())}")
+//             println("sidePoints size = ${sidePoints.size}")
+            // movingDot.layoutY =
+//            movingDot.layoutX = (curY-574) / (-1.73)
+//            xAfterStop = movingDot.layoutX
+//            movingDot.translateX = 0.0
+//            movingDot.translateY = mouseEvent.sceneY - anchorY
+//            println("xAfterStop = $xAfterStop")
         }
     }
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
@@ -93,5 +104,6 @@ class FerreFrame: Initializable {
         movingDot.toFront()
         val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
         println("myPoint inside is $isInside")
+        //todo добавить линии от точки к сторонам треугольника
     }
 }
