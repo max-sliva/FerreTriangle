@@ -1,7 +1,7 @@
 import java.util.ArrayList
 
 //class MyPolyline(var lines: Array<MyLine>){
-class MyPolyline(private var points: Array<MyPoint>){
+class MyPolyline(var points: Array<MyPoint>){
     override fun toString(): String {
         var str = ""
         var i = 0

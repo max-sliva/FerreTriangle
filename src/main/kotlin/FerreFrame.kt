@@ -6,11 +6,16 @@ import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
+import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import java.io.File
+import java.lang.Math.sin
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.cos
+import kotlin.math.sqrt
 
 
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
@@ -26,14 +31,18 @@ class FerreFrame: Initializable {
     lateinit var polygon : Polygon
     var curX = 0.0
     var curY = 0.0
+    var oldX = 0.0
     var xAfterStop = 0.0
     var yAfterStop = 0.0
     lateinit var myTriangle: MyPolyline
     var sidePoints = ArrayList<MyPoint>()
+    var arrayOlines = ArrayList<Line>()
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
         movingDot.cursor = Cursor.MOVE
+//        curX = movingDot.layoutX + mouseEvent.sceneX - anchorX
+//        oldX = curX
         println("triangle points = ${ polygon.points}")
     }
     fun moveDot(mouseEvent: MouseEvent) {
@@ -46,6 +55,26 @@ class FerreFrame: Initializable {
             movingDot.translateY = mouseEvent.sceneY - anchorY
             println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
+            for (line in arrayOlines){ //проходим по всем отрезкам от точки к сторонам треугольника
+                line.startX = curX
+                line.startY = curY
+                if (line == arrayOlines[0]) {
+                    line.endY = curY
+                    line.endX = xForY(curY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
+                }
+                if (line == arrayOlines[1]){
+                    val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+                    val x3=(curX-xOn1_2)*cos(1.0472) + xOn1_2
+                    val y3=(curX-xOn1_2)*kotlin.math.sin(1.0472) + curY
+                    line.endX = x3
+                    line.endY = y3
+                }
+                if (line == arrayOlines[2]){
+                    val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+                    val distFromDotToSide2 = xOn1_2-curX
+                    line.endX = myTriangle.points[2].x - distFromDotToSide2
+                }
+            }
         }
 
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
@@ -65,6 +94,7 @@ class FerreFrame: Initializable {
 //            movingDot.translateY = mouseEvent.sceneY - anchorY
 //            println("xAfterStop = $xAfterStop")
         }
+        oldX = curX
     }
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
 //        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
@@ -126,12 +156,40 @@ class FerreFrame: Initializable {
         println("myTriangle points = $myTriangle")
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
-        movingDot.toFront()
 
         val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
         println("myPoint inside is $isInside")
-        //todo добавить линии от точки к сторонам треугольника
+        //отрезок к первой стороне
+        var xFor0_1 = xForY(movingDot.layoutY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
+        val lineFor0_1 = Line(movingDot.layoutX, movingDot.layoutY, xFor0_1,  movingDot.layoutY)
+        lineFor0_1.stroke = Color.ORANGE
+        lineFor0_1.strokeWidth = 4.0
+        anchorPane.children.add(lineFor0_1)
+        arrayOlines.add(lineFor0_1)
+        //ко второй стороне
+        var xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+        //x3=(x2-x1)*cos(60)-(y2-y1)*sin(60)+x1 - формулы нахождения третьей вершины равностороннего треугольника (https://www.programmersforum.ru/showthread.php?t=317832)
+        //y3=(x2-x1)*sin(60)+(y2-y1)*cos(60)+y1  в нашем случае  y2-y1 = 0, т.к. у 2-х вершин координаты по Y одинаковые
+        val x3=(movingDot.layoutX-xOn1_2)*cos(1.0472) + xOn1_2 //из формул нахождения третьей вершины равностороннего треугольника
+        val y3=(movingDot.layoutX-xOn1_2)*kotlin.math.sin(1.0472) + movingDot.layoutY
+        val lineFor1_2 = Line(movingDot.layoutX, movingDot.layoutY, x3, y3)
+        lineFor1_2.stroke = Color.ORANGE
+        lineFor1_2.strokeWidth = 4.0
+        anchorPane.children.add(lineFor1_2)
+        arrayOlines.add(lineFor1_2)
 
+        //к третьей стороне
+//        val xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+        val distFromDotToSide2 = xOn1_2-movingDot.layoutX
+        val lineFor2_0 = Line(movingDot.layoutX, movingDot.layoutY, myTriangle.points[2].x-distFromDotToSide2,  myTriangle.points[2].y)
+        lineFor2_0.stroke = Color.ORANGE
+        lineFor2_0.strokeWidth = 4.0
+        anchorPane.children.add(lineFor2_0)
+        arrayOlines.add(lineFor2_0)
 
+        polygon.toFront()
+        movingDot.toFront()
     }
+//функция для получения координаты x для заданного y по уравнению прямой
+    fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
 }
