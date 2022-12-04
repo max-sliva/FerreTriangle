@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -32,4 +29,21 @@
    <bottom>
       <Label fx:id="bottomLabel" text="Started" BorderPane.alignment="CENTER" />
    </bottom>
+   <center>
+      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <TableView maxWidth="1.7976931348623157E308" prefHeight="357.0" prefWidth="385.0" HBox.hgrow="ALWAYS">
+              <columns>
+                <TableColumn prefWidth="25.200011432170868" text="№" />
+                <TableColumn prefWidth="125.19998550415039" text="Sample Place" />
+                  <TableColumn prefWidth="103.19998168945312" text="Sample Data1" />
+                  <TableColumn prefWidth="113.19996643066406" text="Sample Data2" />
+                  <TableColumn prefWidth="51.20001220703125" text="Sand" />
+                  <TableColumn prefWidth="47.20001220703125" text="Dust" />
+                  <TableColumn prefWidth="44.20001220703125" text="Mud" />
+              </columns>
+            </TableView>
+         </children>
+      </HBox>
+   </center>
 </BorderPane>

@@ -74,6 +74,7 @@ class ExcelWork(val file: File) {
                         }
                         //todo добавить получение названия ряда из 3-й ячейки ряда
                         //todo сделать массив для хранения нужных данных каждого ряда в виде объектов ObjectForFerre
+                        //todo сделать соединение массива с таблицей на форме
                         if (cellsPrinted > 0 && j > i) { //если с ряду были данные и это не ряд с заголовками
                             contedRows++
                             val sandWith3digits = String.format("%.3f", row.getCell(found - 1).numericCellValue)
