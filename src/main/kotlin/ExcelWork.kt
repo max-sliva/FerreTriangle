@@ -8,12 +8,15 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
-import kotlin.system.exitProcess
+import kotlin.collections.ArrayList
 
 
 class ExcelWork(val file: File) {
-    private var contedRows = 0
+    private var countedRows = 0
     private var ferreArray= ArrayList<ObjectForFerre>()
+
+    fun getFerreArray() = ferreArray
+
     fun printExcelFileToConsole(){
         if (file.extension=="xlsx") {
             val file = FileInputStream(file)
@@ -48,7 +51,7 @@ class ExcelWork(val file: File) {
                 println("anchorCell = " + anchorCell.stringCellValue + "\t")
                 if (formulaEvaluator.evaluateInCell(anchorCell).cellType == CellType.STRING && anchorCell!!.stringCellValue.contains("физ.песок")) {
                     println("anchorCell is correct")
-                    contedRows = 0
+                    countedRows = 0
                     println("sheet.physicalNumberOfRows = ${sheet.physicalNumberOfRows}")
                     for (j in i..sheet.lastRowNum) {
                         val row = sheet.getRow(j)
@@ -58,13 +61,13 @@ class ExcelWork(val file: File) {
                             if (formulaEvaluator.evaluateInCell(cell) != null) {
                                 when (formulaEvaluator.evaluateInCell(cell).cellType) {
                                     CellType.NUMERIC -> {//getting the value of the cell as a number
-                                        val valueWith3digits = String.format("%.3f", cell.numericCellValue)
-                                        print("" + valueWith3digits + "\t")
+//                                        val valueWith3digits = String.format("%.3f", cell.numericCellValue)
+//                                        print("" + valueWith3digits + "\t")
                                         cellsPrinted++
                                     }
 
                                     CellType.STRING -> {//getting the value of the cell as a string
-                                        print(cell.stringCellValue + "\t")
+//                                        print(cell.stringCellValue + "\t")
                                         cellsPrinted++
                                     }
 
@@ -72,22 +75,26 @@ class ExcelWork(val file: File) {
                                 }
                             }
                         }
-                        //todo добавить получение названия ряда из 3-й ячейки ряда
-                        //todo сделать массив для хранения нужных данных каждого ряда в виде объектов ObjectForFerre
-                        //todo сделать соединение массива с таблицей на форме
-                        if (cellsPrinted > 0 && j > i) { //если с ряду были данные и это не ряд с заголовками
-                            contedRows++
-                            val sandWith3digits = String.format("%.3f", row.getCell(found - 1).numericCellValue)
-                            val dustWith3digits = String.format(
-                                "%.3f",
-                                row.getCell(found - 4).numericCellValue + row.getCell(found - 5).numericCellValue
-                            )
-                            val mudWith3digits = String.format("%.3f", row.getCell(found - 3).numericCellValue)
-                            print("песок = $sandWith3digits  пыль = $dustWith3digits  ил = $mudWith3digits ")
+                        if (cellsPrinted > 0 && j > i) { //если в ряду были данные и это не ряд с заголовками
+                            countedRows++
+                            val samplePlace = row.getCell(2).stringCellValue
+                            val sampleData1 = row.getCell(3).stringCellValue
+                            val sampleData2 = row.getCell(4).stringCellValue
+                            val sand = row.getCell(found - 1).numericCellValue
+                            val sandWith3digits = String.format("%.3f", sand)
+                            val dust = row.getCell(found - 4).numericCellValue + row.getCell(found - 5).numericCellValue
+                            val dustWith3digits = String.format("%.3f", dust)
+                            val mud= row.getCell(found - 3).numericCellValue
+                            val mudWith3digits = String.format("%.3f", mud)
+                            val objForFerre = ObjectForFerre(countedRows, samplePlace, sampleData1, sampleData2, sand, dust, mud)
+                            ferreArray.add(objForFerre)
+                            print("место = $samplePlace данные 1 = $sampleData1 данные 2 = $sampleData2 песок = $sandWith3digits  пыль = $dustWith3digits  ил = $mudWith3digits ")
                             println("end row")
                         } else if (cellsPrinted > 0) println("end row")
                     }
-                    println("done printing, countedRows = $contedRows")
+                    println("done printing, countedRows = $countedRows")
+                    println("ferreArray size = ${ferreArray.size} ")
+
                 }
             }else { //если якорная ячейка не найдена
                 println("anchorCell isn't correct")
@@ -134,6 +141,6 @@ class ExcelWork(val file: File) {
     }
 
     fun getRowsAmount(): Int{
-        return contedRows-1 //-1 - потому что первый - заголовки
+        return countedRows-1 //-1 - потому что первый - заголовки
     }
 }
