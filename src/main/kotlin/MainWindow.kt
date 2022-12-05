@@ -59,6 +59,31 @@ class MainWindow: Initializable {
             mudCol.cellValueFactory = PropertyValueFactory("mud")
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
             //todo сделать показ треугольника ферре с выбранной строкой
+            tableForFerre.selectionModel.selectedItemProperty().addListener { it->
+                val place = tableForFerre.selectionModel.selectedItem.samplePlace
+                val sand = tableForFerre.selectionModel.selectedItem.sand
+                val dust = tableForFerre.selectionModel.selectedItem.dust
+                val mud = tableForFerre.selectionModel.selectedItem.mud
+                println("place = $place  sand = $sand dust = $dust  mud = $mud")
+//                val myFerre = FerreFrame()
+//                myFerre.setDot(place)
+//                val ferrePane = myFerre.anchorPane
+//                val ferreStage = Stage()
+//                ferreStage.scene = Scene(ferrePane)
+//                ferreStage.show()
+                val ferreStage = Stage()
+                val fxmlLoader = FXMLLoader(this.javaClass.getResource("FerreFrame.fxml"))
+//        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
+//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath"))
+                val scene = Scene(fxmlLoader.load())
+                ferreStage.title = "FerreTriangle!"
+                ferreStage.scene = scene
+                ferreStage.show()
+                val ferreClass = fxmlLoader.getController<FerreFrame>()
+                ferreClass.setDot(place)
+//                ferreClass.movingDot.centerY = ferreClass.movingDot.centerY+100
+//https://stackoverflow.com/questions/41575933/javafx-fire-textfield-actionevent-manually-programmatically
+            }
         }
 
     }

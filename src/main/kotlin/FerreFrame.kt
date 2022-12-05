@@ -157,8 +157,8 @@ class FerreFrame: Initializable {
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
 
-        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
-        println("myPoint inside is $isInside")
+//        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
+//        println("myPoint inside is $isInside")
         //отрезок к первой стороне
         var xFor0_1 = xForY(movingDot.layoutY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
         val lineFor0_1 = Line(movingDot.layoutX, movingDot.layoutY, xFor0_1,  movingDot.layoutY)
@@ -192,4 +192,8 @@ class FerreFrame: Initializable {
     }
 //функция для получения координаты x для заданного y по уравнению прямой
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
+
+    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) = println("place = $place x = $x  y = $y")
+
+//    fun getAnchopane() = return anchorPane
 }
