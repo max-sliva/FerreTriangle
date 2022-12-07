@@ -9,12 +9,14 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import java.io.File
+import java.lang.Math.pow
 import java.lang.Math.sin
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 
@@ -55,26 +57,7 @@ class FerreFrame: Initializable {
             movingDot.translateY = mouseEvent.sceneY - anchorY
             println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
-            for (line in arrayOlines){ //проходим по всем отрезкам от точки к сторонам треугольника
-                line.startX = curX
-                line.startY = curY
-                if (line == arrayOlines[0]) {
-                    line.endY = curY
-                    line.endX = xForY(curY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
-                }
-                if (line == arrayOlines[1]){
-                    val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
-                    val x3=(curX-xOn1_2)*cos(1.0472) + xOn1_2
-                    val y3=(curX-xOn1_2)*kotlin.math.sin(1.0472) + curY
-                    line.endX = x3
-                    line.endY = y3
-                }
-                if (line == arrayOlines[2]){
-                    val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
-                    val distFromDotToSide2 = xOn1_2-curX
-                    line.endX = myTriangle.points[2].x - distFromDotToSide2
-                }
-            }
+            moveLinesTo(curX, curY)
         }
 
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
@@ -133,13 +116,7 @@ class FerreFrame: Initializable {
                 }
             }
         }
-//        polygon.points.addAll(
-//            *arrayOf(
-//                313.0, 34.0,
-//                132.0, 346.0,
-//                493.0, 346.0
-//            )
-//        )
+
         polygon.fill = Color.TRANSPARENT
         polygon.stroke = Color.BLUE
         polygon.strokeWidth = 4.0
@@ -193,7 +170,53 @@ class FerreFrame: Initializable {
 //функция для получения координаты x для заданного y по уравнению прямой
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
 
-    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) = println("place = $place x = $x  y = $y")
+    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) {
+        println("place = $place x = $x  y = $y")
+//        movingDot.fireEvent(MouseEvent(MouseEvent.MOUSE_DRAGGED, )
+        movingDot.layoutX = x
+        movingDot.layoutY = y
+        curX = x
+        curY = y
+        moveLinesTo(curX, curY)
+    }
 
+    private fun moveLinesTo(curX: Double, curY: Double){ //для перемещения линий к сторонам от точки
+        for (line in arrayOlines){ //проходим по всем отрезкам от точки к сторонам треугольника
+            line.startX = curX
+            line.startY = curY
+            if (line == arrayOlines[0]) {
+                line.endY = curY
+                line.endX = xForY(curY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
+            }
+            if (line == arrayOlines[1]){
+                val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+                val x3=(curX-xOn1_2)*cos(1.0472) + xOn1_2
+                val y3=(curX-xOn1_2)*kotlin.math.sin(1.0472) + curY
+                line.endX = x3
+                line.endY = y3
+            }
+            if (line == arrayOlines[2]){
+                val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
+                val distFromDotToSide2 = xOn1_2-curX
+                line.endX = myTriangle.points[2].x - distFromDotToSide2
+            }
+        }
+    }
+
+    fun dotDetouchListenter() {
+        movingDot.onMouseDragged = null
+        movingDot.onMouseClicked = null
+        movingDot.onMouseMoved = null
+        movingDot.onMouseEntered = null
+        movingDot.onMousePressed = null
+        movingDot.onMouseReleased  = null
+    }
+
+    fun triangleSideLength():Double {
+        println("x1 = ${polygon.points[0]} y1 = ${polygon.points[1]}  x2 = ${polygon.points[2]} y2 = ${polygon.points[3]}")
+        val s =  sqrt((polygon.points[0] - polygon.points[2]).pow(2.0) + (polygon.points[1] - polygon.points[3]).pow(2.0))
+        println("s = $s")
+        return s
+    }
 //    fun getAnchopane() = return anchorPane
 }

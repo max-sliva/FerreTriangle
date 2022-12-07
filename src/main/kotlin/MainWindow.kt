@@ -1,15 +1,14 @@
 import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
-import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.BorderPane
+import javafx.scene.shape.Polygon
 import javafx.stage.FileChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -17,6 +16,8 @@ import java.io.File
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 class MainWindow: Initializable {
 
@@ -58,31 +59,26 @@ class MainWindow: Initializable {
             dustCol.cellValueFactory = PropertyValueFactory("dust")
             mudCol.cellValueFactory = PropertyValueFactory("mud")
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
-            //todo сделать показ треугольника ферре с выбранной строкой
+
             tableForFerre.selectionModel.selectedItemProperty().addListener { it->
                 val place = tableForFerre.selectionModel.selectedItem.samplePlace
                 val sand = tableForFerre.selectionModel.selectedItem.sand
                 val dust = tableForFerre.selectionModel.selectedItem.dust
                 val mud = tableForFerre.selectionModel.selectedItem.mud
-                println("place = $place  sand = $sand dust = $dust  mud = $mud")
-//                val myFerre = FerreFrame()
-//                myFerre.setDot(place)
-//                val ferrePane = myFerre.anchorPane
-//                val ferreStage = Stage()
-//                ferreStage.scene = Scene(ferrePane)
-//                ferreStage.show()
+                println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand+dust+mud}")
+
                 val ferreStage = Stage()
-                val fxmlLoader = FXMLLoader(this.javaClass.getResource("FerreFrame.fxml"))
-//        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
-//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath"))
+                val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
                 val scene = Scene(fxmlLoader.load())
-                ferreStage.title = "FerreTriangle!"
+                ferreStage.title = "FerreTriangle for $place!"
                 ferreStage.scene = scene
-                ferreStage.show()
                 val ferreClass = fxmlLoader.getController<FerreFrame>()
-                ferreClass.setDot(place)
-//                ferreClass.movingDot.centerY = ferreClass.movingDot.centerY+100
-//https://stackoverflow.com/questions/41575933/javafx-fire-textfield-actionevent-manually-programmatically
+                val sideLength = ferreClass.triangleSideLength()
+                println("sideLength = $sideLength")
+                val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
+                ferreStage.show()
+                ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+                ferreClass.dotDetouchListenter()
             }
         }
 
@@ -90,11 +86,29 @@ class MainWindow: Initializable {
 
     fun openFerreFrame(actionEvent: ActionEvent) {
 //        val root = FXMLLoader.load<Parent>(Main.javaClass.getResource("table.fxml"))
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("FerreFrame.fxml"))
+        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
         val stage = Stage() //создаем новое окно
         stage.scene = Scene(fxmlLoader.load()) //загружаем в него таблицу
         stage.initModality(Modality.WINDOW_MODAL) //делаем окно модальным
         stage.initOwner(mainPane.scene.window) //и его владельцем делаем главное окно
         stage.show()
+    }
+
+    fun dotXYfromFerreObject(sand: Double, dust: Double, mud: Double, sideLength: Double, polygon: Polygon): MyPoint{
+        //mud - глина
+        val myPoint = MyPoint(0.0,0.0)
+        val xt = (mud*sideLength)/100 //значение глины в длине стороны
+        val h = xt*sin(1.0472) //1.0472 == 60 градусов
+        val c = xt*cos(1.0472)
+        val pointA = MyPoint(polygon.points[0]+c, polygon.points[1]-h) //точка на стороне S1
+        val xs3 = (sand*sideLength)/100 //значение песка в длине стороны
+        val pointB = MyPoint(polygon.points[4]-xs3, polygon.points[5])  //точка на стороне S3
+
+        val dx = polygon.points[4] - pointB.x //длина xs3
+        val ds = sideLength - xt //длина маленького треугольника при отсечении от большого отрезком с точкой внутри треугольника
+
+        myPoint.x = pointA.x + (ds-dx)
+        myPoint.y = pointA.y
+        return myPoint
     }
 }

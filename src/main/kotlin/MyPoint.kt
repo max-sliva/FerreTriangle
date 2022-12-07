@@ -1,1 +1,1 @@
-data class MyPoint (val x: Double, val y: Double)
+data class MyPoint (var x: Double, var y: Double)

@@ -35,12 +35,12 @@
             <TableView fx:id="tableForFerre" maxWidth="1.7976931348623157E308" prefHeight="357.0" prefWidth="385.0" HBox.hgrow="ALWAYS">
               <columns>
                 <TableColumn fx:id="numCol" prefWidth="34.0" text="№" />
-                <TableColumn fx:id="placeCol" prefWidth="137.0" text="Sample Place" />
+                <TableColumn fx:id="placeCol" prefWidth="137.0" text="Место" />
                   <TableColumn fx:id="data1Col" prefWidth="103.19998168945312" text="Sample Data1" />
                   <TableColumn fx:id="data2Col" prefWidth="113.19996643066406" text="Sample Data2" />
-                  <TableColumn fx:id="sandCol" prefWidth="51.20001220703125" text="Sand" />
-                  <TableColumn fx:id="dustCol" prefWidth="47.20001220703125" text="Dust" />
-                  <TableColumn fx:id="mudCol" prefWidth="44.20001220703125" text="Mud" />
+                  <TableColumn fx:id="sandCol" prefWidth="51.20001220703125" text="Песок" />
+                  <TableColumn fx:id="dustCol" prefWidth="47.20001220703125" text="Пыль" />
+                  <TableColumn fx:id="mudCol" prefWidth="44.20001220703125" text="Глина" />
               </columns>
             </TableView>
          </children>
