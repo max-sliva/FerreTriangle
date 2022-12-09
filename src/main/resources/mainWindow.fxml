@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="702.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -36,11 +36,12 @@
               <columns>
                 <TableColumn fx:id="numCol" prefWidth="34.0" text="№" />
                 <TableColumn fx:id="placeCol" prefWidth="137.0" text="Место" />
-                  <TableColumn fx:id="data1Col" prefWidth="103.19998168945312" text="Глубина" />
-                  <TableColumn fx:id="data2Col" prefWidth="113.19996643066406" text="Номер пробы" />
-                  <TableColumn fx:id="sandCol" prefWidth="51.20001220703125" text="Песок" />
-                  <TableColumn fx:id="dustCol" prefWidth="47.20001220703125" text="Пыль" />
+                  <TableColumn fx:id="data1Col" prefWidth="62.20001220703125" text="Глубина" />
+                  <TableColumn fx:id="data2Col" prefWidth="100.20001220703125" text="Номер пробы" />
+                  <TableColumn fx:id="sandCol" prefWidth="73.199951171875" text="Песок" />
+                  <TableColumn fx:id="dustCol" prefWidth="82.0" text="Пыль" />
                   <TableColumn fx:id="mudCol" prefWidth="44.20001220703125" text="Глина" />
+                  <TableColumn fx:id="resultCol" prefWidth="75.0" text="Результат" />
               </columns>
             </TableView>
          </children>

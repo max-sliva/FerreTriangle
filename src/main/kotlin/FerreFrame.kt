@@ -78,6 +78,7 @@ class FerreFrame: Initializable {
 //            println("xAfterStop = $xAfterStop")
         }
         oldX = curX
+        //todo добавить вывод типа почвы, для этого сделать перевод координат в проценты на каждой стороне
     }
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
 //        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника

@@ -28,6 +28,7 @@ class MainWindow: Initializable {
     lateinit var sandCol: TableColumn<ObjectForFerre, Double>
     lateinit var dustCol: TableColumn<ObjectForFerre, Double>
     lateinit var mudCol: TableColumn<ObjectForFerre, Double>
+    lateinit var resultCol: TableColumn<ObjectForFerre, String>
     @FXML lateinit var tableForFerre: TableView<ObjectForFerre>
     lateinit var mainPane: BorderPane
 
@@ -53,11 +54,12 @@ class MainWindow: Initializable {
             excelWork.printExcelFileToConsole()
             numCol.cellValueFactory = PropertyValueFactory("num")
             placeCol.cellValueFactory = PropertyValueFactory("samplePlace")
-            data1Col.cellValueFactory = PropertyValueFactory("sampleData1")
-            data2Col.cellValueFactory = PropertyValueFactory("sampleData2")
+            data1Col.cellValueFactory = PropertyValueFactory("depth")
+            data2Col.cellValueFactory = PropertyValueFactory("sampleNumber")
             sandCol.cellValueFactory = PropertyValueFactory("sand")
             dustCol.cellValueFactory = PropertyValueFactory("dust")
             mudCol.cellValueFactory = PropertyValueFactory("mud")
+            resultCol.cellValueFactory = PropertyValueFactory("result")
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
 
             tableForFerre.selectionModel.selectedItemProperty().addListener { it->
@@ -65,6 +67,7 @@ class MainWindow: Initializable {
                 val sand = tableForFerre.selectionModel.selectedItem.sand
                 val dust = tableForFerre.selectionModel.selectedItem.dust
                 val mud = tableForFerre.selectionModel.selectedItem.mud
+                val result = tableForFerre.selectionModel.selectedItem.result
                 println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand+dust+mud}")
 
                 val ferreStage = Stage()
