@@ -86,7 +86,8 @@ class ExcelWork(val file: File) {
                             val dustWith3digits = String.format("%.3f", dust)
                             val mud= row.getCell(found - 3).numericCellValue
                             val mudWith3digits = String.format("%.3f", mud)
-                            val objForFerre = ObjectForFerre(countedRows, samplePlace, sampleData1, sampleData2, sand, dust, mud)
+                            val ferreResult = checkForFerreResult(mud, sand, dust)
+                            val objForFerre = ObjectForFerre(countedRows, samplePlace, sampleData1, sampleData2, sand, dust, mud, ferreResult)
                             ferreArray.add(objForFerre)
                             print("место = $samplePlace данные 1 = $sampleData1 данные 2 = $sampleData2 песок = $sandWith3digits  пыль = $dustWith3digits  ил = $mudWith3digits ")
                             println("end row")
@@ -108,7 +109,29 @@ class ExcelWork(val file: File) {
             }
         }
     }
-//метод для получения номера ячейки с текстом "физ.песок"
+
+    private fun checkForFerreResult(mud: Double, sand: Double, dust: Double): String {
+        var result = ""
+       if (((mud.toInt() in (7..20)) and (sand > 52) and ((dust + 2*mud)>=30)) or ((mud<7) and (dust<50) and (sand>43))) {
+           result = "Опесчаненный Суглинок"
+        }
+        else if (sand in 70.0..91.0 && (dust + 1.5*mud)>15 && (dust + 2*mud)<30){
+           result = "Суглинистый песок"
+       }
+       else if (sand > 85 && (dust + 1.5*mud)<15) {
+           result = "Песок"
+       }
+       else if ((mud.toInt() in (7..27)) and (sand<=52) and (dust.toInt() in 28..50)) {
+           result = "Суглинок"
+       }
+       else if (((mud.toInt() in (12..27)) and (dust < 50)) or (mud < 12 && (dust in 50.0..80.0))) {
+           result = "Пылеватый суглинок"
+       }
+        //todo доделать описания почв
+        return  result
+    }
+
+    //метод для получения номера ячейки с текстом "физ.песок"
     private fun getCellNumber(row: Row, formulaEvaluator: FormulaEvaluator): Int {
         var printData = false
         var cellNumber = 0
