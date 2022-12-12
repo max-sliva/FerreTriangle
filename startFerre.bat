@@ -1,0 +1,1 @@
+start jre1.8.0_351\bin\javaw.exe -jar FerreTriangle.jar

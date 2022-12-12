@@ -12,12 +12,20 @@ import javafx.scene.shape.Polygon
 import javafx.stage.FileChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.hssf.util.HSSFColor
+import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.util.CellRangeAddress
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import java.io.File
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.FileOutputStream
+import java.io.IOException
 
 class MainWindow: Initializable {
 
@@ -38,7 +46,7 @@ class MainWindow: Initializable {
 
     fun openFile(actionEvent: ActionEvent) {
         val fileChooser = FileChooser().apply{
-            title = "Open Image File"
+            title = "Open Excel File"
             val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
             initialDirectory = File(currentPath)
             extensionFilters.addAll(
@@ -90,6 +98,14 @@ class MainWindow: Initializable {
 
     fun openFerreFrame(actionEvent: ActionEvent) {
 //        val root = FXMLLoader.load<Parent>(Main.javaClass.getResource("table.fxml"))
+//        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"
+//        println("path = $fxmlPath")
+////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
+//        println(URL("file:$fxmlPath"))
+
+//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
+//        val scene = Scene(fxmlLoader.load())
+
         val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
         val stage = Stage() //создаем новое окно
         stage.scene = Scene(fxmlLoader.load()) //загружаем в него таблицу
@@ -118,5 +134,119 @@ class MainWindow: Initializable {
 
     fun saveToExcel(actionEvent: ActionEvent) {
 //    todo сделать сохранение в результатов Excel
+        val fileChooser = FileChooser().apply{
+            title = "Save Excel File"
+            val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
+            initialDirectory = File(currentPath)
+            extensionFilters.addAll(
+                FileChooser.ExtensionFilter("Excel Files", "*.xlsx"),
+                FileChooser.ExtensionFilter("All Files", "*.*")
+            )
+        }
+        val file = fileChooser.showSaveDialog(mainPane.scene.window)
+        if (file!=null) {
+            val titlesArray = arrayOf("№", "Место", "Глубина", "Номер пробы" ,"Песок", "Пыль", "Глина", "Результат")
+            toExcel(titlesArray, tableForFerre.items, file)
+        }
+
+    }
+
+    fun toExcel(tableTitles: Array<String>, ferreList: List<ObjectForFerre>, file: File)  {
+        var book : Workbook? = null
+        book = XSSFWorkbook() //создаем книгу
+        val sheet = book.createSheet("FerreData") //создаем лист
+        sheet.addMergedRegion( //создадим объединение из 4-х ячеек, чтоб сделать шапку таблицы
+            CellRangeAddress( //добавляем в книгу объединенный диапазон ячеек
+                0, //начальный ряд диапазона
+                0, //конечный ряд диапазона
+                0, //начальная колонка диапазона
+                7 //конечная колонка диапазона
+            )
+        )
+        val row: Row = sheet.createRow(0) //создаем новый ряд
+        val cell: Cell = row.createCell(0) //создаем ячейку
+        cell.setCellValue("!! Информация о пробах почвы !!") //задаем текст ячейки
+        val cellStyle = book.createCellStyle() as XSSFCellStyle // стиль для ряда
+        cellStyle.alignment = HorizontalAlignment.CENTER //задаем выравнивание по центру
+        val font: Font = book.createFont() //создаем шрифт для объединенных ячеек
+        font.setFontHeightInPoints(14.toShort()) //задаем размер шрифта
+        font.setColor(HSSFColor.HSSFColorPredefined.RED.index) //задаем цвет шрифта
+        cellStyle.setFont(font) //добавляем шрифт к стилю
+        cell.cellStyle = cellStyle //устанавливаем стиль на ячейку
+        headCreate(book, sheet, tableTitles) //вызываем метод для заголовка таблицы (описан ниже)
+        dataToSheet(book, sheet, ferreList) //вызываем метод для заполнения данных таблицы (описан ниже)
+        for (i in tableTitles.indices) { //цикл для установки ширины ячеек по содержимому
+            sheet.autoSizeColumn(i)
+        }
+        try { // Записываем всё в файл
+            book.write(FileOutputStream(file)) //пишем книгу в файл
+            book.close() //закрываем книгу
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+    //метод для создания заголовка таблицы
+    private fun headCreate(book: Workbook, sheet: Sheet, tableTitles: Array<String>) {
+// Нумерация рядов начинается с нуля
+        val row: Row = sheet.createRow(1) //создаем новый ряд
+        val cellStyle = book.createCellStyle() as XSSFCellStyle //создаем стиль для ряда
+        cellStyle.alignment = HorizontalAlignment.CENTER //задаем выравнивание по центру
+        cellStyle.borderBottom = BorderStyle.THICK //задаем нижнюю границу
+        cellStyle.borderLeft = BorderStyle.THICK //и все остальные
+        cellStyle.borderRight = BorderStyle.THICK
+        cellStyle.borderTop = BorderStyle.THICK
+        val font: Font = book.createFont() //создаем объект для параметров шрифта
+        font.setBold(true) //делаем шрифт жирным
+        cellStyle.setFont(font) //устанавливаем шрифт в стиль
+        for (i in tableTitles.indices) { //цикл по заголовкам
+            val temp: Cell = row.createCell(i) //создаем ячейку
+            temp.cellStyle = cellStyle //задаем ей стиль
+            temp.setCellValue(tableTitles[i]) //задаем ей значение
+        }
+    }
+    //метод для заполнения данных таблицы
+    private fun dataToSheet(book: Workbook, sheet: Sheet, ferreList: List<ObjectForFerre>): Int {
+        var i = 1 //счетчик кол-ва рядов
+        val cellStyle = book.createCellStyle() as XSSFCellStyle //создаем стиль для ряда
+        cellStyle.borderBottom = BorderStyle.THIN //задаем нижнюю границу
+        cellStyle.borderLeft = BorderStyle.THIN //и все остальные
+        cellStyle.borderRight = BorderStyle.THIN
+        cellStyle.borderTop = BorderStyle.THIN
+        for (ferreObj in ferreList) { //цикл по списку полей
+            i++ //счетчик добавленных строк - рядов
+            val row: Row = sheet.createRow(i) //создаем новый ряд
+            var temp: Cell = row.createCell(0) //задаем первую ячейку
+            temp.setCellValue(ferreObj.num.toString()) //вставляем туда ФИО
+            temp.cellStyle = cellStyle //устанавливаем стиль созданной ячейки
+            temp = row.createCell(1) //задаем вторую ячейку
+            temp.setCellValue(ferreObj.samplePlace) //вставляем туда логин
+            temp.cellStyle = cellStyle
+            temp = row.createCell(2) //задаем третью ячейку
+            temp.setCellValue(ferreObj.depth) //вставляем туда статус пользователя
+            temp.cellStyle = cellStyle
+            temp = row.createCell(3) //задаем третью ячейку
+            temp.setCellValue(ferreObj.sampleNumber) //вставляем туда статус пользователя
+            temp.cellStyle = cellStyle
+            temp = row.createCell(4) //задаем третью ячейку
+            temp.setCellValue(ferreObj.sand) //вставляем туда статус пользователя
+            temp.cellStyle = cellStyle
+            temp = row.createCell(5) //задаем третью ячейку
+            temp.setCellValue(ferreObj.dust) //вставляем туда статус пользователя
+            temp.cellStyle = cellStyle
+            temp = row.createCell(6) //задаем третью ячейку
+            temp.setCellValue(ferreObj.mud) //вставляем туда статус пользователя
+            temp.cellStyle = cellStyle
+            temp = row.createCell(7) //задаем третью ячейку
+            val font: Font = book.createFont() //создаем шрифт для объединенных ячеек
+            font.setFontHeightInPoints(12.toShort()) //задаем размер шрифта
+            font.setColor(HSSFColor.HSSFColorPredefined.GREEN.index) //задаем цвет шрифта
+            temp.setCellValue(ferreObj.result) //вставляем туда статус пользователя
+            var cellStyle1 = book.createCellStyle() as XSSFCellStyle
+            cellStyle1.cloneStyleFrom(cellStyle)
+            cellStyle1.setFont(font) //добавляем шрифт к стилю
+//            cell.cellStyle = cellStyle //устанавливаем стиль на ячейку
+            temp.cellStyle = cellStyle1
+        }
+        return i //можно потом использовать, чтобы узнать реальное кол-во вставленных строк
     }
 }

@@ -4,6 +4,8 @@ import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
+import java.net.URL
+import java.net.URLDecoder
 import kotlin.system.exitProcess
 
 class FerreTriangelApp : Application() {
@@ -11,8 +13,16 @@ class FerreTriangelApp : Application() {
         val fxmlLoader = FXMLLoader(this.javaClass.getResource("mainWindow.fxml"))
 //        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath"))
-        val scene = Scene(fxmlLoader.load(), 1200.0, 900.0)
-        primaryStage?.title = "FerreTriangle!"
+//        val fxmlPath = "${getCurrentPath()}/mainWindow.fxml"
+//        println("path = $fxmlPath")
+////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
+//        println(URL("file:$fxmlPath"))
+//
+//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
+        val scene = Scene(fxmlLoader.load())
+
+//        val scene = Scene(fxmlLoader.load(), 1200.0, 900.0)
+        primaryStage?.title = "FerreTriangle 0.8!"
         primaryStage?.scene = scene
 //        primaryStage?.initStyle(StageStyle.UNDECORATED)
 //        primaryStage?.setMaximized(true)
@@ -29,4 +39,12 @@ class FerreTriangelApp : Application() {
             launch(FerreTriangelApp::class.java) // Main – имя запускного класса
         }
     }
+}
+fun getCurrentPath(): String {
+    val path: String = FerreTriangelApp::class.java.getProtectionDomain().getCodeSource().getLocation().getPath()
+    var decodedPath = URLDecoder.decode(path, "UTF-8")
+    val last = decodedPath.lastIndexOf("/")
+    val newPath = decodedPath.subSequence(0, last)
+
+    return newPath.toString()
 }

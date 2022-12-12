@@ -9,9 +9,13 @@ version = '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
-
-
-
+tasks.withType(Copy).all {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+//tasks.withType(Copy).all { duplicatesStrategy 'exclude' }
+//processResources() {
+//    duplicatesStrategy = 'EXCLUDE'
+//}
 compileKotlin {
     kotlinOptions.jvmTarget = '1.8'
 }
@@ -21,7 +25,7 @@ compileTestKotlin {
 }
 
 application {
-    mainClassName = 'MainKt'
+    mainClassName = 'FerreTriangelAppKt'
 }
 dependencies {
     implementation("org.apache.poi:poi:5.2.3")
