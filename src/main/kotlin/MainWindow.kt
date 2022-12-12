@@ -81,6 +81,7 @@ class MainWindow: Initializable {
                 val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
                 ferreStage.show()
                 ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+                if (ferreClass.soilName.text!=result) ferreClass.soilName.text = result
                 ferreClass.dotDetouchListenter()
             }
         }
@@ -113,5 +114,9 @@ class MainWindow: Initializable {
         myPoint.x = pointA.x + (ds-dx)
         myPoint.y = pointA.y
         return myPoint
+    }
+
+    fun saveToExcel(actionEvent: ActionEvent) {
+//    todo сделать сохранение в результатов Excel
     }
 }

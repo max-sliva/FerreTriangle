@@ -2,13 +2,20 @@ import java.util.ArrayList
 
 //class MyPolyline(var lines: Array<MyLine>){
 class MyPolyline(var points: Array<MyPoint>){
+    val lines = ArrayList<MyLine>()
+
+    init {
+        for (i in 0..2) {
+            val line = if (i != 2) MyLine(points[i], points[i + 1]) else  MyLine(points[2], points[0])
+            lines.add(line)
+        }
+    }
+
     override fun toString(): String {
         var str = ""
-        var i = 0
-        for (point in points){
+        for ((i, point) in points.withIndex()){
 //            println("x$i = ${point.x} x$i = ${point.x}")
             str+="x$i = ${point.x} y$i = ${point.y}\n"
-            i++
         }
         return str
     }
@@ -17,7 +24,7 @@ class MyPolyline(var points: Array<MyPoint>){
         val a = (points[0].x - point.x) * (points[1].y - points[0].y) - (points[1].x - points[0].x) * (points[0].y - point.y)
         val b = (points[1].x - point.x) * (points[2].y - points[1].y) - (points[2].x - points[1].x) * (points[1].y - point.y)
         val c = (points[2].x - point.x) * (points[0].y - points[2].y) - (points[0].x - points[2].x) * (points[2].y - point.y)
-        println("a = $a b = $b c = $c")
+//        println("a = $a b = $b c = $c")
         inside = a >= 0 && b >= 0 && c >= 0 || a <= 0 && b <= 0 && c <= 0
 //        inside = a > 0 && b > 0 && c > 0 || a < 0 && b < 0 && c < 0
         return inside

@@ -1,5 +1,7 @@
+import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Cursor
+import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
@@ -8,9 +10,6 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
-import java.io.File
-import java.lang.Math.pow
-import java.lang.Math.sin
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
@@ -22,6 +21,7 @@ import kotlin.math.sqrt
 
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
+    @FXML lateinit var soilName: Label
     lateinit var ferreImageView: ImageView
     lateinit var anchorPane: AnchorPane
 //    lateinit var boundTriangle: Polygon
@@ -38,7 +38,7 @@ class FerreFrame: Initializable {
     var yAfterStop = 0.0
     lateinit var myTriangle: MyPolyline
     var sidePoints = ArrayList<MyPoint>()
-    var arrayOlines = ArrayList<Line>()
+    var arrayOflines = ArrayList<Line>()
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
@@ -58,6 +58,7 @@ class FerreFrame: Initializable {
             println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
             moveLinesTo(curX, curY)
+            checkSoilName()
         }
 
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
@@ -80,6 +81,7 @@ class FerreFrame: Initializable {
         oldX = curX
         //todo добавить вывод типа почвы, для этого сделать перевод координат в проценты на каждой стороне
     }
+
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
 //        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
         if (myTriangle.sideOutOfPoint(MyPoint(curX, curY)).size == 2) { //если остановились за пределами треугольника
@@ -143,7 +145,7 @@ class FerreFrame: Initializable {
         lineFor0_1.stroke = Color.ORANGE
         lineFor0_1.strokeWidth = 4.0
         anchorPane.children.add(lineFor0_1)
-        arrayOlines.add(lineFor0_1)
+        arrayOflines.add(lineFor0_1)
         //ко второй стороне
         var xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
         //x3=(x2-x1)*cos(60)-(y2-y1)*sin(60)+x1 - формулы нахождения третьей вершины равностороннего треугольника (https://www.programmersforum.ru/showthread.php?t=317832)
@@ -154,7 +156,7 @@ class FerreFrame: Initializable {
         lineFor1_2.stroke = Color.ORANGE
         lineFor1_2.strokeWidth = 4.0
         anchorPane.children.add(lineFor1_2)
-        arrayOlines.add(lineFor1_2)
+        arrayOflines.add(lineFor1_2)
 
         //к третьей стороне
 //        val xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
@@ -163,7 +165,7 @@ class FerreFrame: Initializable {
         lineFor2_0.stroke = Color.ORANGE
         lineFor2_0.strokeWidth = 4.0
         anchorPane.children.add(lineFor2_0)
-        arrayOlines.add(lineFor2_0)
+        arrayOflines.add(lineFor2_0)
 
         polygon.toFront()
         movingDot.toFront()
@@ -181,22 +183,48 @@ class FerreFrame: Initializable {
         moveLinesTo(curX, curY)
     }
 
+    private fun checkSoilName() { //для получения почвы для текущей точки
+        var paramsForFerre = DoubleArray(3) { i ->
+            MyLine( //отрезок на соответствующей стороне
+                myTriangle.lines[i].point1,
+                arrayOflines[i].endPoint()
+            ).length() * 100 / myTriangle.lines[i].length() // умн на 100 и делим на длину стороны
+        }
+        paramsForFerre.forEach { print("${String.format("%.3f", it)} ") }
+        println()
+        val name = ObjectForFerre.checkForFerreResult(paramsForFerre[0], paramsForFerre[2], paramsForFerre[1])
+        println("soil = ${ObjectForFerre.checkForFerreResult(paramsForFerre[0], paramsForFerre[2], paramsForFerre[1])}")
+        if (soilName.text != name) soilName.text = name
+//        for (i in 0..2){
+//            val s = myTriangle.lines[i].length()
+//            val sx = MyLine(myTriangle.lines[i].point1, arrayOflines[i].endPoint()).length()
+//            println("side length = $s")
+//            val a = (sx*100)/s
+//            paramsForFerre.
+//        }
+
+    }
+
+    fun Line.endPoint(): MyPoint {
+        return MyPoint(this.endX, this.endY)
+    }
+
     private fun moveLinesTo(curX: Double, curY: Double){ //для перемещения линий к сторонам от точки
-        for (line in arrayOlines){ //проходим по всем отрезкам от точки к сторонам треугольника
+        for (line in arrayOflines){ //проходим по всем отрезкам от точки к сторонам треугольника
             line.startX = curX
             line.startY = curY
-            if (line == arrayOlines[0]) {
+            if (line == arrayOflines[0]) {
                 line.endY = curY
                 line.endX = xForY(curY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
             }
-            if (line == arrayOlines[1]){
+            if (line == arrayOflines[1]){
                 val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
                 val x3=(curX-xOn1_2)*cos(1.0472) + xOn1_2
                 val y3=(curX-xOn1_2)*kotlin.math.sin(1.0472) + curY
                 line.endX = x3
                 line.endY = y3
             }
-            if (line == arrayOlines[2]){
+            if (line == arrayOflines[2]){
                 val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
                 val distFromDotToSide2 = xOn1_2-curX
                 line.endX = myTriangle.points[2].x - distFromDotToSide2
