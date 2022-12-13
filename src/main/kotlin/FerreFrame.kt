@@ -105,6 +105,8 @@ class FerreFrame: Initializable {
         val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
         println("path = $currentPath")
         ferreImageView.image = Image("file:$currentPath/ferre2.png")
+//        ferreImageView.image = Image("file:$currentPath/USDA-Soil-Triangle.png")
+//        ferreImageView.image = Image("file:$currentPath/ferre3.png")
         val image = ferreImageView.image
         println("image width = ${image.width}  image height = ${image.height}")
         println("image width2 = ${image.widthProperty()}  image height2 = ${image.heightProperty()}")

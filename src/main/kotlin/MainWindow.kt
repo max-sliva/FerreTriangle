@@ -42,6 +42,7 @@ class MainWindow: Initializable {
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         println("Started")
+
     }
 
     fun openFile(actionEvent: ActionEvent) {

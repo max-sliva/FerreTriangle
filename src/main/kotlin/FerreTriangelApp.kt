@@ -4,13 +4,18 @@ import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.Scene
 import javafx.stage.Stage
-import java.net.URL
 import java.net.URLDecoder
+import java.util.*
 import kotlin.system.exitProcess
+
 
 class FerreTriangelApp : Application() {
     override fun start(primaryStage: Stage) {
+//        val locale =  Locale("ru", "RU")
+//        val bundle: ResourceBundle = ResourceBundle.getBundle("strings", locale)
+//        val fxmlLoader = FXMLLoader(this.javaClass.getResource("mainWindow.fxml"), bundle)
         val fxmlLoader = FXMLLoader(this.javaClass.getResource("mainWindow.fxml"))
+//        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.stringsForUI", locale));
 //        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath"))
 //        val fxmlPath = "${getCurrentPath()}/mainWindow.fxml"
