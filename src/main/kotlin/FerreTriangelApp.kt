@@ -24,11 +24,11 @@ class FerreTriangelApp : Application() {
 //        println(URL("file:$fxmlPath"))
 //
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
+        primaryStage?.title = "FerreTriangle 0.8!"
         val scene = Scene(fxmlLoader.load())
+        primaryStage?.scene = scene
 
 //        val scene = Scene(fxmlLoader.load(), 1200.0, 900.0)
-        primaryStage?.title = "FerreTriangle 0.8!"
-        primaryStage?.scene = scene
 //        primaryStage?.initStyle(StageStyle.UNDECORATED)
 //        primaryStage?.setMaximized(true)
 

@@ -7,6 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
 import javafx.scene.shape.Polygon
 import javafx.stage.FileChooser
@@ -37,11 +38,12 @@ class MainWindow: Initializable {
     lateinit var dustCol: TableColumn<ObjectForFerre, Double>
     lateinit var mudCol: TableColumn<ObjectForFerre, Double>
     lateinit var resultCol: TableColumn<ObjectForFerre, String>
-    @FXML lateinit var tableForFerre: TableView<ObjectForFerre>
+    lateinit var tableForFerre: TableView<ObjectForFerre>
     lateinit var mainPane: BorderPane
-
+    var title = ""
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         println("Started")
+//        title = (mainPane.scene.window as Stage).title
 
     }
 
@@ -58,6 +60,10 @@ class MainWindow: Initializable {
         val file = fileChooser.showOpenDialog(mainPane.scene.window)
         if (file!=null) {
             println("file = ${file.path}")
+            println("file = ${file.name}")
+            val stage = mainPane.scene.window as Stage
+            if (title == "") title = (mainPane.scene.window as Stage).title
+            stage.title = title +" "+ file.name
             println("extension = ${file.extension}")
             val excelWork = ExcelWork(file)
             excelWork.printExcelFileToConsole()
@@ -69,30 +75,35 @@ class MainWindow: Initializable {
             dustCol.cellValueFactory = PropertyValueFactory("dust")
             mudCol.cellValueFactory = PropertyValueFactory("mud")
             resultCol.cellValueFactory = PropertyValueFactory("result")
+//            tableForFerre.items.removeAll()
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
-
-            tableForFerre.selectionModel.selectedItemProperty().addListener { it->
-                val place = tableForFerre.selectionModel.selectedItem.samplePlace
-                val sand = tableForFerre.selectionModel.selectedItem.sand
-                val dust = tableForFerre.selectionModel.selectedItem.dust
-                val mud = tableForFerre.selectionModel.selectedItem.mud
-                val result = tableForFerre.selectionModel.selectedItem.result
-                println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand+dust+mud}")
-
-                val ferreStage = Stage()
-                val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
-                val scene = Scene(fxmlLoader.load())
-                ferreStage.title = "FerreTriangle for $place!"
-                ferreStage.scene = scene
-                val ferreClass = fxmlLoader.getController<FerreFrame>()
-                val sideLength = ferreClass.triangleSideLength()
-                println("sideLength = $sideLength")
-                val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
-                ferreStage.show()
-                ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
-                if (ferreClass.soilName.text!=result) ferreClass.soilName.text = result
-                ferreClass.dotDetouchListenter()
-            }
+            tableForFerre.selectionModel.clearSelection()
+//            tableForFerre.onMouseClicked =
+//            tableForFerre.selectionModel.selectedItemProperty().addListener { it->
+//                if (it!=null){
+//                    println("it = $it")
+//                    val place = tableForFerre.selectionModel.selectedItem.samplePlace
+//                    val sand = tableForFerre.selectionModel.selectedItem.sand
+//                    val dust = tableForFerre.selectionModel.selectedItem.dust
+//                    val mud = tableForFerre.selectionModel.selectedItem.mud
+//                    val result = tableForFerre.selectionModel.selectedItem.result
+//                    println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
+//
+//                    val ferreStage = Stage()
+//                    val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
+//                    val scene = Scene(fxmlLoader.load())
+//                    ferreStage.title = "FerreTriangle for $place!"
+//                    ferreStage.scene = scene
+//                    val ferreClass = fxmlLoader.getController<FerreFrame>()
+//                    val sideLength = ferreClass.triangleSideLength()
+//                    println("sideLength = $sideLength")
+//                    val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
+//                    ferreStage.show()
+//                    ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+//                    if (ferreClass.soilName.text != result) ferreClass.soilName.text = result
+//                    ferreClass.dotDetouchListenter()
+//                }
+//            }
         }
 
     }
@@ -134,7 +145,6 @@ class MainWindow: Initializable {
     }
 
     fun saveToExcel(actionEvent: ActionEvent) {
-//    todo сделать сохранение в результатов Excel
         val fileChooser = FileChooser().apply{
             title = "Save Excel File"
             val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
@@ -249,5 +259,28 @@ class MainWindow: Initializable {
             temp.cellStyle = cellStyle1
         }
         return i //можно потом использовать, чтобы узнать реальное кол-во вставленных строк
+    }
+
+    fun tableClick(mouseEvent: MouseEvent) {
+        val place = tableForFerre.selectionModel.selectedItem.samplePlace
+        val sand = tableForFerre.selectionModel.selectedItem.sand
+        val dust = tableForFerre.selectionModel.selectedItem.dust
+        val mud = tableForFerre.selectionModel.selectedItem.mud
+        val result = tableForFerre.selectionModel.selectedItem.result
+        println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
+
+        val ferreStage = Stage()
+        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
+        val scene = Scene(fxmlLoader.load())
+        ferreStage.title = "FerreTriangle for $place!"
+        ferreStage.scene = scene
+        val ferreClass = fxmlLoader.getController<FerreFrame>()
+        val sideLength = ferreClass.triangleSideLength()
+        println("sideLength = $sideLength")
+        val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
+        ferreStage.show()
+        ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+        if (ferreClass.soilName.text != result) ferreClass.soilName.text = result
+        ferreClass.dotDetouchListenter()
     }
 }

@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="702.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="702.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -33,7 +33,7 @@
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="tableForFerre" maxWidth="1.7976931348623157E308" prefHeight="357.0" prefWidth="385.0" HBox.hgrow="ALWAYS">
+            <TableView fx:id="tableForFerre" maxWidth="1.7976931348623157E308" onMouseClicked="#tableClick" prefHeight="357.0" prefWidth="385.0" HBox.hgrow="ALWAYS">
               <columns>
                 <TableColumn fx:id="numCol" prefWidth="34.0" text="№" />
                 <TableColumn fx:id="placeCol" prefWidth="137.0" text="Место" />
