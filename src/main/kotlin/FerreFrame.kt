@@ -175,7 +175,7 @@ class FerreFrame: Initializable {
 //функция для получения координаты x для заданного y по уравнению прямой
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
 
-    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) {
+    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) { //для перемещения точки
         println("place = $place x = $x  y = $y")
 //        movingDot.fireEvent(MouseEvent(MouseEvent.MOUSE_DRAGGED, )
         movingDot.layoutX = x

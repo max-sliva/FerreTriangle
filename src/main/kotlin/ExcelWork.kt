@@ -116,16 +116,30 @@ class ExcelWork(val file: File) {
             println("found = $found  i = $i")
             var anchorCell: HSSFCell? = null
             if (found>0) { //если найдена ячейка с нужным якорным значением
-                anchorCell = sheet.getRow(i).getCell(found - 1)
-                println("anchorCell = " + anchorCell.stringCellValue + "\t")
-//                println("ok")
+                anchorCell = sheet.getRow(i).getCell(found)
+                println("anchorCell = $anchorCell\t")
+                while (anchorCell == null) {
+                    println("null")
+                    found--
+                    anchorCell = sheet.getRow(i).getCell(found)
+                }
+                while (!anchorCell.toString().contains("физ.песок")) {
+                    println("_")
+                    found--
+                    anchorCell = sheet.getRow(i).getCell(found)
+                }
+                println("anchorCell = $anchorCell\t")
+//                while (formulaEvaluator.evaluateInCell(anchorCell).cellType != CellType.STRING && !anchorCell?.stringCellValue!!.contains("физ.песок"))    {
+//                        println("anchorCell = $anchorCell\t")
+//                        anchorCell = sheet.getRow(i).getCell(found--)
+//                }//                println("ok")
 //                if (anchorCell.toString().contains("физ.песок")){
 //                    println("anchorCell contains физ.песок")
 //                } else {
 //                    println("cell ${anchorCell}")
 //                    println("smth wrong")
 //                }
-                if (formulaEvaluator.evaluateInCell(anchorCell).cellType == CellType.STRING && anchorCell.stringCellValue.contains("физ.песок")) {
+                if (formulaEvaluator.evaluateInCell(anchorCell).cellType == CellType.STRING && anchorCell!!.stringCellValue.contains("физ.песок")) {
                     println("anchorCell is correct")
                     countedRows = 0
                     println("sheet.physicalNumberOfRows = ${sheet.physicalNumberOfRows}")
@@ -153,14 +167,21 @@ class ExcelWork(val file: File) {
                         }
                         if (cellsPrinted > 0 && j > i) { //если в ряду были данные и это не ряд с заголовками
                             countedRows++
-                            val samplePlace = row.getCell(2).stringCellValue
-                            val sampleData1 = row.getCell(3).stringCellValue
-                            val sampleData2 = row.getCell(4).stringCellValue
-                            val sand = row.getCell(found - 1).numericCellValue
+//                            val samplePlace = row.getCell(2).stringCellValue
+                            val samplePlace = row.getCell(1).stringCellValue
+                            print("samplePlace = $samplePlace")
+//                            val sampleData1 = row.getCell(3).stringCellValue
+                            val sampleData1 = row.getCell(2).toString()
+//                            val sampleData2 = row.getCell(4).stringCellValue
+                            val sampleData2 = row.getCell(3).toString()
+//                            val sand = row.getCell(found - 1).numericCellValue
+                            val sand = row.getCell(found).numericCellValue
                             val sandWith3digits = String.format("%.3f", sand)
-                            val dust = row.getCell(found - 4).numericCellValue + row.getCell(found - 5).numericCellValue
+//                            val dust = row.getCell(found - 4).numericCellValue + row.getCell(found - 5).numericCellValue
+                            val dust = row.getCell(found - 3).numericCellValue + row.getCell(found - 4).numericCellValue
                             val dustWith3digits = String.format("%.3f", dust)
-                            val mud= row.getCell(found - 3).numericCellValue
+//                            val mud= row.getCell(found - 3).numericCellValue
+                            val mud= row.getCell(found - 2).numericCellValue
                             val mudWith3digits = String.format("%.3f", mud)
                             val ferreResult = ObjectForFerre.checkForFerreResult(mud, sand, dust)
                             val objForFerre = ObjectForFerre(countedRows, samplePlace, sampleData1, sampleData2, sand, dust, mud, ferreResult)
@@ -190,7 +211,7 @@ class ExcelWork(val file: File) {
         var printData = true
         var cellNumber = 0
 //        println("cells in row = ${row.lastCellNum}")
-        for (cell in row) { //iteration over cell using for each loop
+        for ((i,cell) in row.withIndex()) { //iteration over cell using for each loop
             when (formulaEvaluator.evaluateInCell(cell).cellType) {
                 CellType.NUMERIC -> {//getting the value of the cell as a number
                     if (printData) print("" + cell.numericCellValue + "\t")
@@ -201,6 +222,7 @@ class ExcelWork(val file: File) {
                         cellNumber = row.indexOfLast {
                             it.stringCellValue.equals(cell.stringCellValue)
                         }
+                        println("i = $i")
                         println("cellnumber =  ${(cellNumber) }")
                         println("cells in row = ${row.lastCellNum}")
                         println("physical cells in row = ${row.physicalNumberOfCells}")
