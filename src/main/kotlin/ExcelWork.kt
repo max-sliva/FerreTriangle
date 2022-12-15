@@ -117,8 +117,18 @@ class ExcelWork(val file: File) {
             val formulaEvaluator: FormulaEvaluator = wb.creationHelper.createFormulaEvaluator()
             var i = 0
             var found = 0 //номер ячейки с текстом "физ.песок", от него удобно считать остальные ячейки
-            for (row in sheet)  {//iteration over row using for each loop
-                found = getCellNumber(row, formulaEvaluator)
+//            for (row in sheet)  {//iteration over row using for each loop
+//                found = getCellNumber(row, formulaEvaluator)
+//                println()
+//                if (found!=0) {
+//                    break
+//                }
+//                i++
+//            }
+        for (i1 in 0..sheet.lastRowNum)  {//iteration over row using for each loop
+            val row = sheet.getRow(i1)
+            println("row = $row")
+            if (row!=null) found = getCellNumber(row, formulaEvaluator)
                 println()
                 if (found!=0) {
                     break
@@ -225,58 +235,63 @@ class ExcelWork(val file: File) {
         var cellNumber = 0
 //        println("cells in row = ${row.lastCellNum}")
 
-             for (cn in 0 until row.lastCellNum) {
+             for (cn in row.lastCellNum downTo 0 ) {
                  // If the cell is missing from the file, generate a blank one
                  // (Works by specifying a MissingCellPolicy)
                  val cell = row.getCell(cn, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)
+                 if (cell.toString().contains("физ.песок")) {
+                     print("CELL: $cn --> $cell")
+                     cellNumber = cn
+                     break
+                 }
                  // Print the cell for debugging
-                 print("CELL: $cn --> $cell")
+
              }
 
               println()
 
-        for ((i,cell) in row.withIndex()) { //iteration over cell using for each loop
-            if (printData) print("i = $i $cell\t")
-            if (cell.toString().contains("физ.песок")) {
-                cellNumber = row.indexOfLast {
-                    it.toString().equals(cell.toString())
-                }
-                println("i = $i")
-//                val lastCell = row.lastIndexOf(cell)
-//                println("lastCell = $lastCell")
-                println("cellnumber =  ${(cellNumber) }")
-                println("cells in row = ${row.lastCellNum}")
-                println("physical cells in row = ${row.physicalNumberOfCells}")
-//                cellNumber = row.physicalNumberOfCells
-//                        for (i in 1..6){
-//                            println("last cell №${row.lastCellNum-i} = ${row.getCell(row.lastCellNum.toInt()-i)}")
-//                        }
-                if (cellNumber!=0) return cellNumber
-            }
-//            when (formulaEvaluator.evaluateInCell(cell).cellType) {
-//                CellType.NUMERIC -> {//getting the value of the cell as a number
-//                    if (printData) print("" + cell.numericCellValue + "\t")
+//        for ((i,cell) in row.withIndex()) { //iteration over cell using for each loop
+//            if (printData) print("i = $i $cell\t")
+//            if (cell.toString().contains("физ.песок")) {
+//                cellNumber = row.indexOfLast {
+//                    it.toString().equals(cell.toString())
 //                }
-//                CellType.STRING -> {//getting the value of the cell as a string
-//                    if (printData) print(cell.stringCellValue + "\t")
-//                    if (cell.stringCellValue.contains("физ.песок")) {
-//                        cellNumber = row.indexOfLast {
-//                            it.stringCellValue.equals(cell.stringCellValue)
-//                        }
-//                        println("i = $i")
-//                        println("cellnumber =  ${(cellNumber) }")
-//                        println("cells in row = ${row.lastCellNum}")
-//                        println("physical cells in row = ${row.physicalNumberOfCells}")
-//                        cellNumber = row.physicalNumberOfCells
+//                println("i = $i")
+////                val lastCell = row.lastIndexOf(cell)
+////                println("lastCell = $lastCell")
+//                println("cellnumber =  ${(cellNumber) }")
+//                println("cells in row = ${row.lastCellNum}")
+//                println("physical cells in row = ${row.physicalNumberOfCells}")
+////                cellNumber = row.physicalNumberOfCells
 ////                        for (i in 1..6){
 ////                            println("last cell №${row.lastCellNum-i} = ${row.getCell(row.lastCellNum.toInt()-i)}")
 ////                        }
-//                        if (cellNumber!=0) return cellNumber
-//                    }
-//                }
-//                else -> {}
+//                if (cellNumber!=0) return cellNumber
 //            }
-        }
+////            when (formulaEvaluator.evaluateInCell(cell).cellType) {
+////                CellType.NUMERIC -> {//getting the value of the cell as a number
+////                    if (printData) print("" + cell.numericCellValue + "\t")
+////                }
+////                CellType.STRING -> {//getting the value of the cell as a string
+////                    if (printData) print(cell.stringCellValue + "\t")
+////                    if (cell.stringCellValue.contains("физ.песок")) {
+////                        cellNumber = row.indexOfLast {
+////                            it.stringCellValue.equals(cell.stringCellValue)
+////                        }
+////                        println("i = $i")
+////                        println("cellnumber =  ${(cellNumber) }")
+////                        println("cells in row = ${row.lastCellNum}")
+////                        println("physical cells in row = ${row.physicalNumberOfCells}")
+////                        cellNumber = row.physicalNumberOfCells
+//////                        for (i in 1..6){
+//////                            println("last cell №${row.lastCellNum-i} = ${row.getCell(row.lastCellNum.toInt()-i)}")
+//////                        }
+////                        if (cellNumber!=0) return cellNumber
+////                    }
+////                }
+////                else -> {}
+////            }
+//        }
         return cellNumber
     }
 
