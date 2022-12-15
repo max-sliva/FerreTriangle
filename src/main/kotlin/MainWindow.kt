@@ -110,7 +110,7 @@ class MainWindow: Initializable {
 
     fun openFerreFrame(actionEvent: ActionEvent) {
 //        val root = FXMLLoader.load<Parent>(Main.javaClass.getResource("table.fxml"))
-//        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"
+        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"
 //        println("path = $fxmlPath")
 ////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
 //        println(URL("file:$fxmlPath"))
@@ -118,7 +118,7 @@ class MainWindow: Initializable {
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
 //        val scene = Scene(fxmlLoader.load())
 
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
+        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
         val stage = Stage() //создаем новое окно
         stage.scene = Scene(fxmlLoader.load()) //загружаем в него таблицу
         stage.initModality(Modality.WINDOW_MODAL) //делаем окно модальным
@@ -269,8 +269,16 @@ class MainWindow: Initializable {
         val result = tableForFerre.selectionModel.selectedItem.result
         println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
 
+        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"//для jar-файла
+//        println("path = $fxmlPath")
+////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
+//        println(URL("file:$fxmlPath"))
+
+//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
+
+
         val ferreStage = Stage()
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml"))
+        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
         val scene = Scene(fxmlLoader.load())
         ferreStage.title = "FerreTriangle for $place!"
         ferreStage.scene = scene
