@@ -10,10 +10,13 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
+import javafx.scene.text.Font
+import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
+import javax.swing.text.Style
 import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.pow
@@ -42,6 +45,8 @@ class FerreFrame: Initializable {
     var arrayOflines = ArrayList<Line>()
     var paramsForFerre = DoubleArray(3)
     val mudVal = Text()
+    val dustVal = Text()
+    val sandVal = Text()
 
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
@@ -64,7 +69,9 @@ class FerreFrame: Initializable {
             yAfterStop = curY
             moveLinesTo(curX, curY)
             checkSoilName()
-            mudVal.text = "${String.format("%.2f", paramsForFerre[0])}"
+            mudVal.text = "${String.format("%.1f", paramsForFerre[0])}"
+            dustVal.text = "${String.format("%.1f", paramsForFerre[1])}"
+            sandVal.text = "${String.format("%.1f", paramsForFerre[2])}"
         }
 
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
@@ -147,7 +154,6 @@ class FerreFrame: Initializable {
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
 
-        anchorPane.children.add(mudVal)
 //        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
 //        println("myPoint inside is $isInside")
         //отрезок к первой стороне
@@ -157,11 +163,6 @@ class FerreFrame: Initializable {
         lineFor0_1.strokeWidth = 4.0
         anchorPane.children.add(lineFor0_1)
         arrayOflines.add(lineFor0_1)
-        mudVal.layoutX = xFor0_1 - 30  //todo сделать такие же объекты для пыли и песка
-//        mudVal.layoutXProperty().bind(lineFor0_1.endXProperty()) // xFor0_1
-        mudVal.layoutY = movingDot.layoutY
-//        mudVal.layoutYProperty().bind(lineFor0_1.endYProperty()) // xFor0_1
-        mudVal.text = "${paramsForFerre[0]}"
         //ко второй стороне
         var xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
         //x3=(x2-x1)*cos(60)-(y2-y1)*sin(60)+x1 - формулы нахождения третьей вершины равностороннего треугольника (https://www.programmersforum.ru/showthread.php?t=317832)
@@ -174,6 +175,7 @@ class FerreFrame: Initializable {
         anchorPane.children.add(lineFor1_2)
         arrayOflines.add(lineFor1_2)
 
+
         //к третьей стороне
 //        val xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
         val distFromDotToSide2 = xOn1_2-movingDot.layoutX
@@ -182,9 +184,31 @@ class FerreFrame: Initializable {
         lineFor2_0.strokeWidth = 4.0
         anchorPane.children.add(lineFor2_0)
         arrayOflines.add(lineFor2_0)
-
+        checkSoilName()
         polygon.toFront()
         movingDot.toFront()
+        mudVal.layoutX = xFor0_1 - 30
+//        mudVal.layoutXProperty().bind(lineFor0_1.endXProperty()) // xFor0_1
+        mudVal.layoutY = movingDot.layoutY
+//        mudVal.layoutYProperty().bind(lineFor0_1.endYProperty()) // xFor0_1
+        mudVal.text = "${String.format("%.1f", paramsForFerre[0])}"
+        anchorPane.children.add(mudVal)
+        mudVal.fill = Color.ORANGE
+        mudVal.style = "-fx-font-weight: bold";
+//        mudVal.font = Font.font()
+
+        dustVal.layoutX = lineFor1_2.endX+10
+        dustVal.layoutY = lineFor1_2.endY
+        dustVal.text = "${String.format("%.1f", paramsForFerre[1])}"
+        anchorPane.children.add(dustVal)
+        dustVal.fill = Color.ORANGE
+
+
+        sandVal.layoutX = lineFor2_0.endX
+        sandVal.layoutY = lineFor2_0.endY+20
+        sandVal.text = "${String.format("%.1f", paramsForFerre[2])}"
+        anchorPane.children.add(sandVal)
+        sandVal.fill = Color.ORANGE
     }
 //функция для получения координаты x для заданного y по уравнению прямой
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
@@ -241,11 +265,15 @@ class FerreFrame: Initializable {
                 val y3=(curX-xOn1_2)*kotlin.math.sin(1.0472) + curY
                 line.endX = x3
                 line.endY = y3
+                dustVal.layoutX = line.endX+10
+                dustVal.layoutY = line.endY
             }
             if (line == arrayOflines[2]){
                 val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
                 val distFromDotToSide2 = xOn1_2-curX
                 line.endX = myTriangle.points[2].x - distFromDotToSide2
+                sandVal.layoutX = line.endX
+                sandVal.layoutY = line.endY+20
             }
         }
     }
