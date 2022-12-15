@@ -10,6 +10,7 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
+import javafx.scene.text.Text
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
@@ -39,6 +40,9 @@ class FerreFrame: Initializable {
     lateinit var myTriangle: MyPolyline
     var sidePoints = ArrayList<MyPoint>()
     var arrayOflines = ArrayList<Line>()
+    var paramsForFerre = DoubleArray(3)
+    val mudVal = Text()
+
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
         anchorY = mouseEvent.sceneY
@@ -57,8 +61,10 @@ class FerreFrame: Initializable {
             movingDot.translateY = mouseEvent.sceneY - anchorY
             println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
+            yAfterStop = curY
             moveLinesTo(curX, curY)
             checkSoilName()
+            mudVal.text = "${String.format("%.2f", paramsForFerre[0])}"
         }
 
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
@@ -79,16 +85,18 @@ class FerreFrame: Initializable {
 //            println("xAfterStop = $xAfterStop")
         }
         oldX = curX
-        //todo добавить вывод типа почвы, для этого сделать перевод координат в проценты на каждой стороне
     }
 
     fun mouseReleasedDot(mouseEvent: MouseEvent) {
 //        if (curY <(-1.73*curX+574)) { //если остановились за пределами треугольника
         if (myTriangle.sideOutOfPoint(MyPoint(curX, curY)).size == 2) { //если остановились за пределами треугольника
             movingDot.layoutX = xAfterStop
-        } //todo разобраться с точкой после отпускания мыши
-        else movingDot.layoutX = mouseEvent.sceneX - mouseOffsetFromNodeZeroX
-        movingDot.layoutY = mouseEvent.sceneY - mouseOffsetFromNodeZeroY
+            movingDot.layoutY = yAfterStop
+        }
+        else {
+            movingDot.layoutX = mouseEvent.sceneX - mouseOffsetFromNodeZeroX
+            movingDot.layoutY = mouseEvent.sceneY - mouseOffsetFromNodeZeroY
+        }
         //clear changes from TranslateX and TranslateY
         movingDot.translateX = 0.0
         movingDot.translateY = 0.0
@@ -139,6 +147,7 @@ class FerreFrame: Initializable {
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
 
+        anchorPane.children.add(mudVal)
 //        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
 //        println("myPoint inside is $isInside")
         //отрезок к первой стороне
@@ -148,6 +157,11 @@ class FerreFrame: Initializable {
         lineFor0_1.strokeWidth = 4.0
         anchorPane.children.add(lineFor0_1)
         arrayOflines.add(lineFor0_1)
+        mudVal.layoutX = xFor0_1 - 30  //todo сделать такие же объекты для пыли и песка
+//        mudVal.layoutXProperty().bind(lineFor0_1.endXProperty()) // xFor0_1
+        mudVal.layoutY = movingDot.layoutY
+//        mudVal.layoutYProperty().bind(lineFor0_1.endYProperty()) // xFor0_1
+        mudVal.text = "${paramsForFerre[0]}"
         //ко второй стороне
         var xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
         //x3=(x2-x1)*cos(60)-(y2-y1)*sin(60)+x1 - формулы нахождения третьей вершины равностороннего треугольника (https://www.programmersforum.ru/showthread.php?t=317832)
@@ -186,7 +200,7 @@ class FerreFrame: Initializable {
     }
 
     private fun checkSoilName() { //для получения почвы для текущей точки
-        var paramsForFerre = DoubleArray(3) { i ->
+        paramsForFerre = DoubleArray(3) { i ->
             MyLine( //отрезок на соответствующей стороне
                 myTriangle.lines[i].point1,
                 arrayOflines[i].endPoint()
@@ -218,6 +232,8 @@ class FerreFrame: Initializable {
             if (line == arrayOflines[0]) {
                 line.endY = curY
                 line.endX = xForY(curY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
+                mudVal.layoutX = line.endX - 30
+                mudVal.layoutY = line.endY
             }
             if (line == arrayOflines[1]){
                 val xOn1_2 = xForY(curY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
