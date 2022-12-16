@@ -1,7 +1,6 @@
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML
-import javafx.fxml.FXMLLoader
 import javafx.fxml.Initializable
 import javafx.scene.Scene
 import javafx.scene.control.TableColumn
@@ -13,7 +12,6 @@ import javafx.scene.shape.Polygon
 import javafx.stage.FileChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
-import org.apache.poi.hssf.usermodel.HSSFCellStyle
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.ss.util.CellRangeAddress
@@ -112,13 +110,10 @@ class MainWindow: Initializable {
 //        val root = FXMLLoader.load<Parent>(Main.javaClass.getResource("table.fxml"))
         val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"
 //        println("path = $fxmlPath")
-////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
-//        println(URL("file:$fxmlPath"))
-
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
 //        val scene = Scene(fxmlLoader.load())
-
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
+//        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
+        val fxmlLoader = getLoader("ferreFrame.fxml")
         val stage = Stage() //создаем новое окно
         stage.scene = Scene(fxmlLoader.load()) //загружаем в него таблицу
         stage.initModality(Modality.WINDOW_MODAL) //делаем окно модальным
@@ -268,17 +263,13 @@ class MainWindow: Initializable {
         val mud = tableForFerre.selectionModel.selectedItem.mud
         val result = tableForFerre.selectionModel.selectedItem.result
         println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
-
-        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"//для jar-файла
+//        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"//для jar-файла
 //        println("path = $fxmlPath")
-////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
-//        println(URL("file:$fxmlPath"))
-
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
-
+//        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
+        val fxmlLoader = getLoader("ferreFrame.fxml")
 
         val ferreStage = Stage()
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
         val scene = Scene(fxmlLoader.load())
         ferreStage.title = "FerreTriangle for $place!"
         ferreStage.scene = scene
@@ -288,6 +279,10 @@ class MainWindow: Initializable {
         val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
         ferreStage.show()
         ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+        ferreClass.mudVal.text = String.format("%.1f", mud)
+        ferreClass.dustVal.text = String.format("%.1f", dust)
+        ferreClass.sandVal.text = String.format("%.1f", sand)
+
         if (ferreClass.soilName.text != result) ferreClass.soilName.text = result
         ferreClass.dotDetouchListenter()
     }

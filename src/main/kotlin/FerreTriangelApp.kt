@@ -6,7 +6,6 @@ import javafx.scene.Scene
 import javafx.stage.Stage
 import java.net.URL
 import java.net.URLDecoder
-import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -18,16 +17,15 @@ class FerreTriangelApp : Application() {
 
 
 //        fxmlLoader.setResources(ResourceBundle.getBundle("bundles.stringsForUI", locale));
-//        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
-//        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath"))
-        val fxmlPath = "${getCurrentPath()}/mainWindow.fxml"
-        println("path = $fxmlPath")
+//        val fxmlPath = "${getCurrentPath()}/mainWindow.fxml"
+//        println("path = $fxmlPath")
 ////        println(HelloApplication::class.java.getResource("/my/hello-view.fxml"))
 //        println(URL("file:$fxmlPath"))
 //
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
-        val fxmlLoader = FXMLLoader(this.javaClass.getResource("mainWindow.fxml")) //для запуска из IDE
-        primaryStage?.title = "FerreTriangle 0.8!"
+        val fxmlLoader = getLoader("mainWindow.fxml")
+//        val fxmlLoader = FXMLLoader(this.javaClass.getResource("mainWindow.fxml")) //для запуска из IDE
+        primaryStage?.title = "FerreTriangle 0.9!"
         val scene = Scene(fxmlLoader.load())
         primaryStage?.scene = scene
 
@@ -41,6 +39,7 @@ class FerreTriangelApp : Application() {
             exitProcess(0)
         }
     }
+
     companion object { //специальный объект для запуска проекта в рамках фреймворка JavaFX
         @JvmStatic // его всегда оставляем одинаковым для всех проектов
         fun main(args: Array<String>) {
@@ -48,6 +47,7 @@ class FerreTriangelApp : Application() {
         }
     }
 }
+
 fun getCurrentPath(): String {
     val path: String = FerreTriangelApp::class.java.getProtectionDomain().getCodeSource().getLocation().getPath()
     var decodedPath = URLDecoder.decode(path, "UTF-8")
@@ -55,4 +55,11 @@ fun getCurrentPath(): String {
     val newPath = decodedPath.subSequence(0, last)
 
     return newPath.toString()
+}
+
+fun getLoader(fxmlName: String): FXMLLoader {
+    val fxmlPath = "${getCurrentPath()}/$fxmlName"
+//    val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
+    val fxmlLoader = FXMLLoader(FerreTriangelApp.javaClass.getResource(fxmlName)) //для запуска из IDE
+    return fxmlLoader
 }

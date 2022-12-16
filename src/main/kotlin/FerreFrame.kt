@@ -22,7 +22,6 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
     @FXML lateinit var soilName: Label
@@ -44,9 +43,9 @@ class FerreFrame: Initializable {
     var sidePoints = ArrayList<MyPoint>()
     var arrayOflines = ArrayList<Line>()
     var paramsForFerre = DoubleArray(3)
-    val mudVal = Text()
-    val dustVal = Text()
-    val sandVal = Text()
+    val mudVal = Text()  //текстовое поле со значением глины для текущей точки
+    val dustVal = Text() //текстовое поле со значением пыли для текущей точки
+    val sandVal = Text() //текстовое поле со значением песка для текущей точки
 
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
@@ -54,7 +53,7 @@ class FerreFrame: Initializable {
         movingDot.cursor = Cursor.MOVE
 //        curX = movingDot.layoutX + mouseEvent.sceneX - anchorX
 //        oldX = curX
-        println("triangle points = ${ polygon.points}")
+//        println("triangle points = ${ polygon.points}")
     }
     fun moveDot(mouseEvent: MouseEvent) {
         // уравнение левой стороны треугольника: y = -1.73x + 574
@@ -64,7 +63,7 @@ class FerreFrame: Initializable {
         if (myTriangle.isPointInside(MyPoint(curX, curY))) {
             movingDot.translateX = mouseEvent.sceneX - anchorX
             movingDot.translateY = mouseEvent.sceneY - anchorY
-            println("moving dot x = ${mouseEvent.sceneX}")
+//            println("moving dot x = ${mouseEvent.sceneX}")
             xAfterStop = curX
             yAfterStop = curY
             moveLinesTo(curX, curY)
@@ -78,7 +77,7 @@ class FerreFrame: Initializable {
         else if (myTriangle.sideWithPoint(MyPoint(curX, curY)).size == 2){
             xAfterStop = mouseEvent.sceneX
 //            sidePoints = myTriangle.sideWithPoint(MyPoint(curX, curY))
-            println("on side!!!")
+//            println("on side!!!")
         }
         else if (myTriangle.sideOutOfPoint(MyPoint(curX, curY)).size == 2){  //если курсор выходит за пределы треугольника
             sidePoints = myTriangle.sideOutOfPoint(MyPoint(curX, curY))
@@ -115,16 +114,16 @@ class FerreFrame: Initializable {
     }
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        println("pane width = ${anchorPane.prefWidth}  pane height = ${anchorPane.prefHeight}")
+//        println("pane width = ${anchorPane.prefWidth}  pane height = ${anchorPane.prefHeight}")
         polygon = Polygon()
         val currentPath: String = Paths.get(".").toAbsolutePath().normalize().toString()
-        println("path = $currentPath")
+//        println("path = $currentPath")
         ferreImageView.image = Image("file:$currentPath/ferre2.png")
 //        ferreImageView.image = Image("file:$currentPath/USDA-Soil-Triangle.png")
 //        ferreImageView.image = Image("file:$currentPath/ferre3.png")
         val image = ferreImageView.image
-        println("image width = ${image.width}  image height = ${image.height}")
-        println("image width2 = ${image.widthProperty()}  image height2 = ${image.heightProperty()}")
+//        println("image width = ${image.width}  image height = ${image.height}")
+//        println("image width2 = ${image.widthProperty()}  image height2 = ${image.heightProperty()}")
         for (x in 0 until image.width.toInt()) { //в циклах ищем красные точки, чтоб их добавить к полигону
             for (y in 0 until image.height.toInt()) {
                 val r = image.pixelReader
@@ -146,11 +145,11 @@ class FerreFrame: Initializable {
         var myPoint: MyPoint
         for (i in 0..4 step 2){
             myPoints.add(MyPoint(polygon.points[i], polygon.points[i+1]))
-            println("added to myPoints ${polygon.points[i]}, ${polygon.points[i+1]}")
+//            println("added to myPoints ${polygon.points[i]}, ${polygon.points[i+1]}")
         }
         myTriangle = MyPolyline(myPoints.toTypedArray())
-        println("polygon points = ${ polygon.points}")
-        println("myTriangle points = $myTriangle")
+//        println("polygon points = ${ polygon.points}")
+//        println("myTriangle points = $myTriangle")
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
 
@@ -214,7 +213,7 @@ class FerreFrame: Initializable {
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
 
     fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) { //для перемещения точки
-        println("place = $place x = $x  y = $y")
+//        println("place = $place x = $x  y = $y")
 //        movingDot.fireEvent(MouseEvent(MouseEvent.MOUSE_DRAGGED, )
         movingDot.layoutX = x
         movingDot.layoutY = y
@@ -233,7 +232,7 @@ class FerreFrame: Initializable {
         paramsForFerre.forEach { print("${String.format("%.3f", it)} ") }
         println()
         val name = ObjectForFerre.checkForFerreResult(paramsForFerre[0], paramsForFerre[2], paramsForFerre[1])
-        println("soil = ${ObjectForFerre.checkForFerreResult(paramsForFerre[0], paramsForFerre[2], paramsForFerre[1])}")
+//        println("soil = ${ObjectForFerre.checkForFerreResult(paramsForFerre[0], paramsForFerre[2], paramsForFerre[1])}")
         if (soilName.text != name) soilName.text = name
 //        for (i in 0..2){
 //            val s = myTriangle.lines[i].length()
@@ -288,9 +287,9 @@ class FerreFrame: Initializable {
     }
 
     fun triangleSideLength():Double {
-        println("x1 = ${polygon.points[0]} y1 = ${polygon.points[1]}  x2 = ${polygon.points[2]} y2 = ${polygon.points[3]}")
+//        println("x1 = ${polygon.points[0]} y1 = ${polygon.points[1]}  x2 = ${polygon.points[2]} y2 = ${polygon.points[3]}")
         val s =  sqrt((polygon.points[0] - polygon.points[2]).pow(2.0) + (polygon.points[1] - polygon.points[3]).pow(2.0))
-        println("s = $s")
+//        println("s = $s")
         return s
     }
 //    fun getAnchopane() = return anchorPane
