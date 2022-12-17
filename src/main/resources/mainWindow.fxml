@@ -5,27 +5,32 @@
 
 <BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="702.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainWindow">
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-                  <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#openFile" text="Open" />
-                  <MenuItem fx:id="saveToExcelItem" mnemonicParsing="false" onAction="#saveToExcel" text="Save to Excel file" />
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Ferre">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#openFerreFrame" text="FerreWindow" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#openFile" text="Open" />
+                        <MenuItem fx:id="saveToExcelItem" mnemonicParsing="false" onAction="#saveToExcel" text="Save to Excel file" />
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Ferre">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#openFerreFrame" text="FerreWindow" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <CheckBox fx:id="manyDotsCheck" mnemonicParsing="false" text="ManyDotsOnImage" />
+         </children>
+      </HBox>
    </top>
    <bottom>
       <Label fx:id="bottomLabel" text="Started" BorderPane.alignment="CENTER" />

@@ -10,7 +10,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
 
-
 class ExcelWork(val file: File) {
     private var countedRows = 0
     private var ferreArray = ArrayList<ObjectForFerre>()
@@ -18,7 +17,7 @@ class ExcelWork(val file: File) {
     fun getFerreArray() = ferreArray
 
     fun printExcelFileToConsole() {
-        ferreArray = ArrayList<ObjectForFerre>()
+        ferreArray = ArrayList()
         var colWithPlace = 2 //Номер столбца с местом пробы
         val dialog = TextInputDialog("2")
 
@@ -48,7 +47,7 @@ class ExcelWork(val file: File) {
         for (i1 in 0..sheet.lastRowNum) {//iteration over row using for each loop
             val row = sheet.getRow(i1)
             println("row = $row")
-            if (row != null) found = getCellNumber(row, formulaEvaluator)
+            if (row != null) found = getCellNumber(row/*, formulaEvaluator*/)
             println()
             if (found != 0) {
                 break
@@ -56,7 +55,6 @@ class ExcelWork(val file: File) {
             i++
         }
         println("found = $found  i = $i")
-//            var anchorCell: HSSFCell? = null //XSSFCell
         var anchorCell: Cell?
         if (found > 0) { //если найдена ячейка с нужным якорным значением
             anchorCell = sheet.getRow(i).getCell(found, Row.MissingCellPolicy.RETURN_NULL_AND_BLANK)
@@ -163,8 +161,8 @@ class ExcelWork(val file: File) {
     }
 
     //метод для получения номера ячейки с текстом "физ.песок"
-    private fun getCellNumber(row: Row, formulaEvaluator: FormulaEvaluator): Int {
-        var printData = true
+    private fun getCellNumber(row: Row/*, formulaEvaluator: FormulaEvaluator*/): Int {
+//        var printData = true
         var cellNumber = 0
 //        println("cells in row = ${row.lastCellNum}")
 
@@ -182,7 +180,7 @@ class ExcelWork(val file: File) {
         return cellNumber
     }
 
-    fun getRowsAmount(): Int {
-        return countedRows - 1 //-1 - потому что первый - заголовки
-    }
+//    fun getRowsAmount(): Int {
+//        return countedRows - 1 //-1 - потому что первый - заголовки
+//    }
 }

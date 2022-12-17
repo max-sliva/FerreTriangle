@@ -1,3 +1,4 @@
+import javafx.beans.property.SetProperty
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Cursor
@@ -10,14 +11,11 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
-import javafx.scene.text.Font
-import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
+import org.apache.commons.beanutils.BeanUtils
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
-import javax.swing.text.Style
-import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -68,11 +66,10 @@ class FerreFrame: Initializable {
             yAfterStop = curY
             moveLinesTo(curX, curY)
             checkSoilName()
-            mudVal.text = "${String.format("%.1f", paramsForFerre[0])}"
-            dustVal.text = "${String.format("%.1f", paramsForFerre[1])}"
-            sandVal.text = "${String.format("%.1f", paramsForFerre[2])}"
+            mudVal.text = String.format("%.1f", paramsForFerre[0])
+            dustVal.text = String.format("%.1f", paramsForFerre[1])
+            sandVal.text = String.format("%.1f", paramsForFerre[2])
         }
-
 //        else if ((curX == ((curY-574) / (-1.73)).toInt().toDouble())){  //если точка на границе треугольника
         else if (myTriangle.sideWithPoint(MyPoint(curX, curY)).size == 2){
             xAfterStop = mouseEvent.sceneX
@@ -83,7 +80,6 @@ class FerreFrame: Initializable {
             sidePoints = myTriangle.sideOutOfPoint(MyPoint(curX, curY))
              println("side = ${Arrays.toString(sidePoints.toArray())}")
 //             println("sidePoints size = ${sidePoints.size}")
-            // movingDot.layoutY =
 //            movingDot.layoutX = (curY-574) / (-1.73)
 //            xAfterStop = movingDot.layoutX
 //            movingDot.translateX = 0.0
@@ -141,8 +137,8 @@ class FerreFrame: Initializable {
         polygon.strokeWidth = 4.0
         anchorPane.children.add(polygon)
         var myPoints = ArrayList<MyPoint>()
-        var j = 0
-        var myPoint: MyPoint
+//        var j = 0
+//        var myPoint: MyPoint
         for (i in 0..4 step 2){
             myPoints.add(MyPoint(polygon.points[i], polygon.points[i+1]))
 //            println("added to myPoints ${polygon.points[i]}, ${polygon.points[i+1]}")
@@ -153,8 +149,6 @@ class FerreFrame: Initializable {
         movingDot.layoutY = polygon.points[3]+50
         movingDot.layoutX = polygon.points[2]
 
-//        val isInside = myTriangle.isPointInside(MyPoint(313.0, 30.0))
-//        println("myPoint inside is $isInside")
         //отрезок к первой стороне
         var xFor0_1 = xForY(movingDot.layoutY, myTriangle.points[0].y, myTriangle.points[1].y,  myTriangle.points[0].x, myTriangle.points[1].x)
         val lineFor0_1 = Line(movingDot.layoutX, movingDot.layoutY, xFor0_1,  movingDot.layoutY)
@@ -174,7 +168,6 @@ class FerreFrame: Initializable {
         anchorPane.children.add(lineFor1_2)
         arrayOflines.add(lineFor1_2)
 
-
         //к третьей стороне
 //        val xOn1_2 = xForY(movingDot.layoutY, myTriangle.points[1].y, myTriangle.points[2].y, myTriangle.points[1].x, myTriangle.points[2].x)
         val distFromDotToSide2 = xOn1_2-movingDot.layoutX
@@ -190,22 +183,22 @@ class FerreFrame: Initializable {
 //        mudVal.layoutXProperty().bind(lineFor0_1.endXProperty()) // xFor0_1
         mudVal.layoutY = movingDot.layoutY
 //        mudVal.layoutYProperty().bind(lineFor0_1.endYProperty()) // xFor0_1
-        mudVal.text = "${String.format("%.1f", paramsForFerre[0])}"
+        mudVal.text = String.format("%.1f", paramsForFerre[0])
         anchorPane.children.add(mudVal)
         mudVal.fill = Color.ORANGE
-        mudVal.style = "-fx-font-weight: bold";
+        mudVal.style = "-fx-font-weight: bold"
 //        mudVal.font = Font.font()
 
         dustVal.layoutX = lineFor1_2.endX+10
         dustVal.layoutY = lineFor1_2.endY
-        dustVal.text = "${String.format("%.1f", paramsForFerre[1])}"
+        dustVal.text = String.format("%.1f", paramsForFerre[1])
         anchorPane.children.add(dustVal)
         dustVal.fill = Color.ORANGE
 
 
         sandVal.layoutX = lineFor2_0.endX
         sandVal.layoutY = lineFor2_0.endY+20
-        sandVal.text = "${String.format("%.1f", paramsForFerre[2])}"
+        sandVal.text = String.format("%.1f", paramsForFerre[2])
         anchorPane.children.add(sandVal)
         sandVal.fill = Color.ORANGE
     }
@@ -291,6 +284,21 @@ class FerreFrame: Initializable {
         val s =  sqrt((polygon.points[0] - polygon.points[2]).pow(2.0) + (polygon.points[1] - polygon.points[3]).pow(2.0))
 //        println("s = $s")
         return s
+    }
+
+    fun addDot(x: Double, y: Double) {
+        var newDot = Circle()
+        BeanUtils.copyProperties(newDot, movingDot)
+        newDot.layoutX = x
+        newDot.layoutY = y
+        anchorPane.children.add(newDot)
+//        newDot.properties.forEach { t, u ->
+//            movingDot.properties.forEach { t1, u1 ->
+//                if (t.toString()==t1.toString()){
+//                    SetProperty<>
+//                }
+//            }
+//        }
     }
 //    fun getAnchopane() = return anchorPane
 }

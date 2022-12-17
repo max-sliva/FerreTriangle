@@ -1,6 +1,5 @@
 import java.util.ArrayList
 
-//class MyPolyline(var lines: Array<MyLine>){
 class MyPolyline(var points: Array<MyPoint>){
     val lines = ArrayList<MyLine>()
 

@@ -1,10 +1,12 @@
 import javafx.collections.FXCollections
-import javafx.event.ActionEvent;
+import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Scene
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
+import javafx.scene.control.CheckBox
+import javafx.scene.control.SelectionMode
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
@@ -28,6 +30,7 @@ import java.io.IOException
 
 class MainWindow: Initializable {
 
+    @FXML lateinit var manyDotsCheck: CheckBox
     @FXML lateinit var numCol: TableColumn<ObjectForFerre, Int>
     lateinit var placeCol: TableColumn<ObjectForFerre, String>
     lateinit var data1Col: TableColumn<ObjectForFerre, String>
@@ -39,6 +42,8 @@ class MainWindow: Initializable {
     lateinit var tableForFerre: TableView<ObjectForFerre>
     lateinit var mainPane: BorderPane
     var title = ""
+    var ferreStageForMultiDots: Stage? = null
+    var ferreClassForMultiDots: FerreFrame? = null
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         println("Started")
 //        title = (mainPane.scene.window as Stage).title
@@ -107,11 +112,8 @@ class MainWindow: Initializable {
     }
 
     fun openFerreFrame(actionEvent: ActionEvent) {
-//        val root = FXMLLoader.load<Parent>(Main.javaClass.getResource("table.fxml"))
         val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"
-//        println("path = $fxmlPath")
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
-//        val scene = Scene(fxmlLoader.load())
 //        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
         val fxmlLoader = getLoader("ferreFrame.fxml")
         val stage = Stage() //создаем новое окно
@@ -175,8 +177,8 @@ class MainWindow: Initializable {
         val cellStyle = book.createCellStyle() as XSSFCellStyle // стиль для ряда
         cellStyle.alignment = HorizontalAlignment.CENTER //задаем выравнивание по центру
         val font: Font = book.createFont() //создаем шрифт для объединенных ячеек
-        font.setFontHeightInPoints(14.toShort()) //задаем размер шрифта
-        font.setColor(HSSFColor.HSSFColorPredefined.RED.index) //задаем цвет шрифта
+        font.fontHeightInPoints = 14.toShort() //задаем размер шрифта
+        font.color = HSSFColor.HSSFColorPredefined.RED.index //задаем цвет шрифта
         cellStyle.setFont(font) //добавляем шрифт к стилю
         cell.cellStyle = cellStyle //устанавливаем стиль на ячейку
         headCreate(book, sheet, tableTitles) //вызываем метод для заголовка таблицы (описан ниже)
@@ -202,7 +204,7 @@ class MainWindow: Initializable {
         cellStyle.borderRight = BorderStyle.THICK
         cellStyle.borderTop = BorderStyle.THICK
         val font: Font = book.createFont() //создаем объект для параметров шрифта
-        font.setBold(true) //делаем шрифт жирным
+        font.bold = true //делаем шрифт жирным
         cellStyle.setFont(font) //устанавливаем шрифт в стиль
         for (i in tableTitles.indices) { //цикл по заголовкам
             val temp: Cell = row.createCell(i) //создаем ячейку
@@ -244,8 +246,8 @@ class MainWindow: Initializable {
             temp.cellStyle = cellStyle
             temp = row.createCell(7) //задаем третью ячейку
             val font: Font = book.createFont() //создаем шрифт для объединенных ячеек
-            font.setFontHeightInPoints(12.toShort()) //задаем размер шрифта
-            font.setColor(HSSFColor.HSSFColorPredefined.GREEN.index) //задаем цвет шрифта
+            font.fontHeightInPoints = 12.toShort() //задаем размер шрифта
+            font.color = HSSFColor.HSSFColorPredefined.GREEN.index //задаем цвет шрифта
             temp.setCellValue(ferreObj.result) //вставляем туда статус пользователя
             var cellStyle1 = book.createCellStyle() as XSSFCellStyle
             cellStyle1.cloneStyleFrom(cellStyle)
@@ -257,33 +259,77 @@ class MainWindow: Initializable {
     }
 
     fun tableClick(mouseEvent: MouseEvent) {
-        val place = tableForFerre.selectionModel.selectedItem.samplePlace
-        val sand = tableForFerre.selectionModel.selectedItem.sand
-        val dust = tableForFerre.selectionModel.selectedItem.dust
-        val mud = tableForFerre.selectionModel.selectedItem.mud
-        val result = tableForFerre.selectionModel.selectedItem.result
-        println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
+        if (tableForFerre.selectionModel.selectedItem!=null && !manyDotsCheck.isSelected){
+            val place = tableForFerre.selectionModel.selectedItem.samplePlace
+            val sand = tableForFerre.selectionModel.selectedItem.sand
+            val dust = tableForFerre.selectionModel.selectedItem.dust
+            val mud = tableForFerre.selectionModel.selectedItem.mud
+            val result = tableForFerre.selectionModel.selectedItem.result
+            println("place = $place  sand = $sand dust = $dust  mud = $mud  sum = ${sand + dust + mud}")
 //        val fxmlPath = "${getCurrentPath()}/ferreFrame.fxml"//для jar-файла
 //        println("path = $fxmlPath")
 //        val fxmlLoader = FXMLLoader(URL("file:$fxmlPath")) //для jar-файла
 //        val fxmlLoader = FXMLLoader(this.javaClass.getResource("ferreFrame.fxml")) //для запуска из IDE
-        val fxmlLoader = getLoader("ferreFrame.fxml")
+            val fxmlLoader = getLoader("ferreFrame.fxml")
 
-        val ferreStage = Stage()
-        val scene = Scene(fxmlLoader.load())
-        ferreStage.title = "FerreTriangle for $place!"
-        ferreStage.scene = scene
-        val ferreClass = fxmlLoader.getController<FerreFrame>()
-        val sideLength = ferreClass.triangleSideLength()
-        println("sideLength = $sideLength")
-        val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
-        ferreStage.show()
-        ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
-        ferreClass.mudVal.text = String.format("%.1f", mud)
-        ferreClass.dustVal.text = String.format("%.1f", dust)
-        ferreClass.sandVal.text = String.format("%.1f", sand)
+            val ferreStage = Stage()
+            val scene = Scene(fxmlLoader.load())
+            ferreStage.title = "FerreTriangle for $place!"
+            ferreStage.scene = scene
+            val ferreClass = fxmlLoader.getController<FerreFrame>()
+            val sideLength = ferreClass.triangleSideLength()
+            println("sideLength = $sideLength")
+            val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
+            ferreStage.show()
+            ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+            ferreClass.mudVal.text = String.format("%.1f", mud)
+            ferreClass.dustVal.text = String.format("%.1f", dust)
+            ferreClass.sandVal.text = String.format("%.1f", sand)
 
-        if (ferreClass.soilName.text != result) ferreClass.soilName.text = result
-        ferreClass.dotDetouchListenter()
+            if (ferreClass.soilName.text != result) ferreClass.soilName.text = result
+            ferreClass.dotDetouchListenter()
+        } else{
+            println("MultiDot")
+            tableForFerre.selectionModel.selectionMode = SelectionMode.MULTIPLE
+            if (ferreStageForMultiDots==null) {
+                println("ferreStageForMuliDots is null")
+                val place = tableForFerre.selectionModel.selectedItem.samplePlace
+                val sand = tableForFerre.selectionModel.selectedItem.sand
+                val dust = tableForFerre.selectionModel.selectedItem.dust
+                val mud = tableForFerre.selectionModel.selectedItem.mud
+                val result = tableForFerre.selectionModel.selectedItem.result
+                println("last place = $place")
+                val fxmlLoader = getLoader("ferreFrame.fxml")
+                ferreStageForMultiDots = Stage()
+                val scene = Scene(fxmlLoader.load())
+                ferreStageForMultiDots!!.title = "FerreTriangle !"
+                ferreStageForMultiDots!!.scene = scene
+                ferreClassForMultiDots = fxmlLoader.getController<FerreFrame>()
+                val sideLength = (ferreClassForMultiDots as FerreFrame).triangleSideLength()
+                println("sideLength = $sideLength")
+                val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClassForMultiDots!!.polygon)
+                ferreStageForMultiDots!!.show()
+                ferreClassForMultiDots!!.setDot(place, dotOnFerre.x, dotOnFerre.y)
+                ferreClassForMultiDots!!.mudVal.text = String.format("%.1f", mud)
+                ferreClassForMultiDots!!.dustVal.text = String.format("%.1f", dust)
+                ferreClassForMultiDots!!.sandVal.text = String.format("%.1f", sand)
+
+                if (ferreClassForMultiDots!!.soilName.text != result) ferreClassForMultiDots!!.soilName.text = result
+                ferreClassForMultiDots!!.dotDetouchListenter()
+
+            } else {
+                val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
+                val sand = tableForFerre.selectionModel.selectedItems.last().sand
+                val dust = tableForFerre.selectionModel.selectedItems.last().dust
+                val mud = tableForFerre.selectionModel.selectedItems.last().mud
+                val result = tableForFerre.selectionModel.selectedItems.last().result
+                println("last place = $place")
+                val sideLength = ferreClassForMultiDots?.triangleSideLength()
+                println("sideLength = $sideLength")
+                val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
+                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y)
+            }
+//            tableForFerre
+        }
     }
 }

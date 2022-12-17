@@ -30,4 +30,5 @@ application {
 dependencies {
     implementation("org.apache.poi:poi:5.2.3")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
+    implementation("commons-beanutils:commons-beanutils:1.9.4")
 }
