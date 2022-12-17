@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
 import javafx.scene.shape.Polygon
+import javafx.scene.text.Text
 import javafx.stage.FileChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -291,7 +292,7 @@ class MainWindow: Initializable {
         } else{
             println("MultiDot")
             tableForFerre.selectionModel.selectionMode = SelectionMode.MULTIPLE
-            if (ferreStageForMultiDots==null) {
+            if (ferreStageForMultiDots==null) { //если первый раз выбираем элемент в мультирежиме
                 println("ferreStageForMuliDots is null")
                 val place = tableForFerre.selectionModel.selectedItem.samplePlace
                 val sand = tableForFerre.selectionModel.selectedItem.sand
@@ -318,6 +319,9 @@ class MainWindow: Initializable {
                 ferreClassForMultiDots!!.dotDetouchListenter()
 
             } else {
+                //todo сделать добавление объекта Text для точки, и чтобы появлялась надпись при наведении на точку
+                val textForDot = Text()
+
                 val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
                 val sand = tableForFerre.selectionModel.selectedItems.last().sand
                 val dust = tableForFerre.selectionModel.selectedItems.last().dust
@@ -328,6 +332,7 @@ class MainWindow: Initializable {
                 println("sideLength = $sideLength")
                 val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
                 ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y)
+                ferreStageForMultiDots!!.show()
             }
 //            tableForFerre
         }
