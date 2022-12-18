@@ -319,9 +319,8 @@ class MainWindow: Initializable {
                 ferreClassForMultiDots!!.dotDetouchListenter()
 
             } else {
-                //todo сделать добавление объекта Text для точки, и чтобы появлялась надпись при наведении на точку
                 val textForDot = Text()
-
+                val number = tableForFerre.selectionModel.selectedItems.last().num
                 val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
                 val sand = tableForFerre.selectionModel.selectedItems.last().sand
                 val dust = tableForFerre.selectionModel.selectedItems.last().dust
@@ -331,7 +330,7 @@ class MainWindow: Initializable {
                 val sideLength = ferreClassForMultiDots?.triangleSideLength()
                 println("sideLength = $sideLength")
                 val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
-                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y)
+                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y, number)
                 ferreStageForMultiDots!!.show()
             }
 //            tableForFerre

@@ -1,4 +1,4 @@
-import javafx.beans.property.SetProperty
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Cursor
@@ -12,13 +12,16 @@ import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
 import javafx.scene.text.Text
-import org.apache.commons.beanutils.BeanUtils
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
+class Circle1(var number: Int): Circle() {
+
+}
+
 
 //исходная картинка взята с https://direct.farm/post/opredeleniye-mekhanicheskogo-sostava-pochvy-metodom-ferre-5708
 class FerreFrame: Initializable {
@@ -272,7 +275,7 @@ class FerreFrame: Initializable {
 
     fun dotDetouchListenter() {
         movingDot.onMouseDragged = null
-        movingDot.onMouseClicked = null
+//        movingDot.onMouseClicked = null
         movingDot.onMouseMoved = null
         movingDot.onMouseEntered = null
         movingDot.onMousePressed = null
@@ -286,19 +289,28 @@ class FerreFrame: Initializable {
         return s
     }
 
-    fun addDot(x: Double, y: Double) {
-        var newDot = Circle()
-        BeanUtils.copyProperties(newDot, movingDot)
+    fun addDot(x: Double, y: Double, number: Int) {
+        //todo сделать чтобы появлялась надпись при наведении на точку, а при щелчке выделялась строка с объектом
+        println("in addDot")
+        var newDot = Circle1(number)
+//        BeanUtils.copyProperties(newDot, movingDot)
+//        newDot.id = "newDot"
+        newDot.radius = movingDot.radius
+        newDot.stroke = movingDot.stroke
+        newDot.fill = movingDot.fill
         newDot.layoutX = x
         newDot.layoutY = y
         anchorPane.children.add(newDot)
-//        newDot.properties.forEach { t, u ->
-//            movingDot.properties.forEach { t1, u1 ->
-//                if (t.toString()==t1.toString()){
-//                    SetProperty<>
-//                }
-//            }
-//        }
+
+        movingDot.onMouseClicked = EventHandler<MouseEvent?> {
+//            println("Dot")
+            println("Dot = ${it.source}")
+        }
+        newDot.onMouseClicked = EventHandler<MouseEvent?> {
+            println("Dot1 = ${(it.source as Circle1).number}")
+        }
+        newDot.cursor = Cursor.HAND
+
     }
 //    fun getAnchopane() = return anchorPane
 }
