@@ -1,12 +1,11 @@
+import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Scene
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.scene.control.CheckBox
-import javafx.scene.control.SelectionMode
+import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
@@ -17,17 +16,18 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
-import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.FileOutputStream
-import java.io.IOException
 
 class MainWindow: Initializable {
 
@@ -82,6 +82,33 @@ class MainWindow: Initializable {
 //            tableForFerre.items.removeAll()
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
             tableForFerre.selectionModel.clearSelection()
+            tableForFerre.setRowFactory { tv ->
+//                println("$value")
+                val row = TableRow<ObjectForFerre>()
+                if (row.index == 2) row.style = "-fx-background-color: yellow;" //todo разобраться, как раскрасить ряд с нужным номером
+                row.onMouseClicked = EventHandler { event: MouseEvent ->
+                    println("row ${row.index} was selected ")
+                    if (manyDotsCheck.isSelected) row.style = "-fx-background-color: lightblue;"
+                }
+//                row.selectedProperty()
+//                    .addListener { obs: ObservableValue<out Boolean>?, wasSelected: Boolean?, isNowSelected: Boolean ->
+//                        if (isNowSelected) {
+////                            val outOfStock: Boolean = checkIfOutOfStock(row.item)
+////                            row.pseudoClassStateChanged(outOfStockPseudoClass, outOfStock)
+////                            row.style = "-fx-background-color: lightblue;"
+//                            println("row was selected 1")
+//                        }
+//                    }
+//                row.itemProperty()
+//                    .addListener { obs: ObservableValue<out ObjectForFerre?>?, oldMovie: ObjectForFerre?, newMovie: ObjectForFerre? ->
+//                        if (row.isSelected) {
+////                            val outOfStock: Boolean = checkIfOutOfStock(newMovie)
+////                            row.pseudoClassStateChanged(outOfStockPseudoClass, outOfStock)
+//                            println("row was selected 2")
+//                        }
+//                    }
+                return@setRowFactory row
+            }
 //            tableForFerre.onMouseClicked =
 //            tableForFerre.selectionModel.selectedItemProperty().addListener { it->
 //                if (it!=null){
@@ -225,31 +252,31 @@ class MainWindow: Initializable {
             i++ //счетчик добавленных строк - рядов
             val row: Row = sheet.createRow(i) //создаем новый ряд
             var temp: Cell = row.createCell(0) //задаем первую ячейку
-            temp.setCellValue(ferreObj.num.toString()) //вставляем туда ФИО
+            temp.setCellValue(ferreObj.num.toString())
             temp.cellStyle = cellStyle //устанавливаем стиль созданной ячейки
-            temp = row.createCell(1) //задаем вторую ячейку
-            temp.setCellValue(ferreObj.samplePlace) //вставляем туда логин
+            temp = row.createCell(1) //задаем  ячейку
+            temp.setCellValue(ferreObj.samplePlace)
             temp.cellStyle = cellStyle
-            temp = row.createCell(2) //задаем третью ячейку
-            temp.setCellValue(ferreObj.depth) //вставляем туда статус пользователя
+            temp = row.createCell(2) //задаем  ячейку
+            temp.setCellValue(ferreObj.depth)
             temp.cellStyle = cellStyle
-            temp = row.createCell(3) //задаем третью ячейку
-            temp.setCellValue(ferreObj.sampleNumber) //вставляем туда статус пользователя
+            temp = row.createCell(3) //задаем  ячейку
+            temp.setCellValue(ferreObj.sampleNumber)
             temp.cellStyle = cellStyle
-            temp = row.createCell(4) //задаем третью ячейку
-            temp.setCellValue(ferreObj.sand) //вставляем туда статус пользователя
+            temp = row.createCell(4) //задаем  ячейку
+            temp.setCellValue(ferreObj.sand)
             temp.cellStyle = cellStyle
-            temp = row.createCell(5) //задаем третью ячейку
-            temp.setCellValue(ferreObj.dust) //вставляем туда статус пользователя
+            temp = row.createCell(5) //задаем  ячейку
+            temp.setCellValue(ferreObj.dust)
             temp.cellStyle = cellStyle
-            temp = row.createCell(6) //задаем третью ячейку
-            temp.setCellValue(ferreObj.mud) //вставляем туда статус пользователя
+            temp = row.createCell(6) //задаем  ячейку
+            temp.setCellValue(ferreObj.mud)
             temp.cellStyle = cellStyle
             temp = row.createCell(7) //задаем третью ячейку
             val font: Font = book.createFont() //создаем шрифт для объединенных ячеек
             font.fontHeightInPoints = 12.toShort() //задаем размер шрифта
             font.color = HSSFColor.HSSFColorPredefined.GREEN.index //задаем цвет шрифта
-            temp.setCellValue(ferreObj.result) //вставляем туда статус пользователя
+            temp.setCellValue(ferreObj.result)
             var cellStyle1 = book.createCellStyle() as XSSFCellStyle
             cellStyle1.cloneStyleFrom(cellStyle)
             cellStyle1.setFont(font) //добавляем шрифт к стилю
@@ -292,6 +319,11 @@ class MainWindow: Initializable {
         } else{
             println("MultiDot")
             tableForFerre.selectionModel.selectionMode = SelectionMode.MULTIPLE
+            val selRow = tableForFerre.selectionModel.selectedIndexProperty().value
+//            tableForFerre.row
+            println("row = ${selRow}")
+//            tableForFerre.selectionModel.
+          //  }
             if (ferreStageForMultiDots==null) { //если первый раз выбираем элемент в мультирежиме
                 println("ferreStageForMuliDots is null")
                 val place = tableForFerre.selectionModel.selectedItem.samplePlace

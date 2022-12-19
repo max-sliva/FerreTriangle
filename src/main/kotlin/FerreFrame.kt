@@ -11,6 +11,7 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import javafx.scene.shape.Line
 import javafx.scene.shape.Polygon
+import javafx.scene.text.Font
 import javafx.scene.text.Text
 import java.net.URL
 import java.nio.file.Paths
@@ -295,12 +296,19 @@ class FerreFrame: Initializable {
         var newDot = Circle1(number)
 //        BeanUtils.copyProperties(newDot, movingDot)
 //        newDot.id = "newDot"
-        newDot.radius = movingDot.radius
+        newDot.radius = movingDot.radius+1
         newDot.stroke = movingDot.stroke
         newDot.fill = movingDot.fill
         newDot.layoutX = x
         newDot.layoutY = y
-        anchorPane.children.add(newDot)
+        val textForDot = Text(if (number >= 10) (x - newDot.radius / 2-3) else  x - newDot.radius / 2, y + newDot.radius / 2, number.toString())
+        val font = Font( 9.0)
+//        font.set = "-fx-font-color: "
+        textForDot.font = font
+        textForDot.fill = Color.WHITE
+        textForDot.style = "-fx-font-weight: bold"
+        anchorPane.children.addAll(newDot, textForDot)
+
 
         movingDot.onMouseClicked = EventHandler<MouseEvent?> {
 //            println("Dot")
@@ -309,6 +317,10 @@ class FerreFrame: Initializable {
         newDot.onMouseClicked = EventHandler<MouseEvent?> {
             println("Dot1 = ${(it.source as Circle1).number}")
         }
+        textForDot.onMouseClicked = EventHandler<MouseEvent?> {
+            println("Dot1 = ${(it.source as Text).text}")
+        }
+        textForDot.cursor = Cursor.HAND
         newDot.cursor = Cursor.HAND
 
     }
