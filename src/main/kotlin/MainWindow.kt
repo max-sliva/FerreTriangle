@@ -1,7 +1,5 @@
-import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
-import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Scene
@@ -30,7 +28,6 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class MainWindow: Initializable {
-
     @FXML lateinit var manyDotsCheck: CheckBox
     @FXML lateinit var numCol: TableColumn<ObjectForFerre, Int>
     lateinit var placeCol: TableColumn<ObjectForFerre, String>
@@ -48,7 +45,6 @@ class MainWindow: Initializable {
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         println("Started")
 //        title = (mainPane.scene.window as Stage).title
-
     }
 
     fun openFile(actionEvent: ActionEvent) {
@@ -82,33 +78,6 @@ class MainWindow: Initializable {
 //            tableForFerre.items.removeAll()
             tableForFerre.items = FXCollections.observableArrayList(excelWork.getFerreArray())
             tableForFerre.selectionModel.clearSelection()
-            tableForFerre.setRowFactory { tv ->
-//                println("$value")
-                val row = TableRow<ObjectForFerre>()
-                if (row.index == 2) row.style = "-fx-background-color: yellow;" //todo разобраться, как раскрасить ряд с нужным номером
-                row.onMouseClicked = EventHandler { event: MouseEvent ->
-                    println("row ${row.index} was selected ")
-                    if (manyDotsCheck.isSelected) row.style = "-fx-background-color: lightblue;"
-                }
-//                row.selectedProperty()
-//                    .addListener { obs: ObservableValue<out Boolean>?, wasSelected: Boolean?, isNowSelected: Boolean ->
-//                        if (isNowSelected) {
-////                            val outOfStock: Boolean = checkIfOutOfStock(row.item)
-////                            row.pseudoClassStateChanged(outOfStockPseudoClass, outOfStock)
-////                            row.style = "-fx-background-color: lightblue;"
-//                            println("row was selected 1")
-//                        }
-//                    }
-//                row.itemProperty()
-//                    .addListener { obs: ObservableValue<out ObjectForFerre?>?, oldMovie: ObjectForFerre?, newMovie: ObjectForFerre? ->
-//                        if (row.isSelected) {
-////                            val outOfStock: Boolean = checkIfOutOfStock(newMovie)
-////                            row.pseudoClassStateChanged(outOfStockPseudoClass, outOfStock)
-//                            println("row was selected 2")
-//                        }
-//                    }
-                return@setRowFactory row
-            }
 //            tableForFerre.onMouseClicked =
 //            tableForFerre.selectionModel.selectedItemProperty().addListener { it->
 //                if (it!=null){
@@ -309,7 +278,7 @@ class MainWindow: Initializable {
             println("sideLength = $sideLength")
             val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClass.polygon)
             ferreStage.show()
-            ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y)
+            ferreClass.setDot(place, dotOnFerre.x, dotOnFerre.y, tableForFerre.selectionModel.selectedItem.num, tableForFerre)
             ferreClass.mudVal.text = String.format("%.1f", mud)
             ferreClass.dustVal.text = String.format("%.1f", dust)
             ferreClass.sandVal.text = String.format("%.1f", sand)
@@ -342,7 +311,7 @@ class MainWindow: Initializable {
                 println("sideLength = $sideLength")
                 val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength, ferreClassForMultiDots!!.polygon)
                 ferreStageForMultiDots!!.show()
-                ferreClassForMultiDots!!.setDot(place, dotOnFerre.x, dotOnFerre.y)
+                ferreClassForMultiDots!!.setDot(place, dotOnFerre.x, dotOnFerre.y, tableForFerre.selectionModel.selectedItem.num, tableForFerre)
                 ferreClassForMultiDots!!.mudVal.text = String.format("%.1f", mud)
                 ferreClassForMultiDots!!.dustVal.text = String.format("%.1f", dust)
                 ferreClassForMultiDots!!.sandVal.text = String.format("%.1f", sand)
@@ -350,7 +319,8 @@ class MainWindow: Initializable {
                 if (ferreClassForMultiDots!!.soilName.text != result) ferreClassForMultiDots!!.soilName.text = result
                 ferreClassForMultiDots!!.dotDetouchListenter()
 
-            } else {
+            } else { //todo сделать добавление выбора к уже выделенным строкам, хранить массив с номерами выделенных строк, его очищать при выборе нового файла
+                //если окно с таблицей становится активным (в фокусе), то снова выделяем эти строки
                 val textForDot = Text()
                 val number = tableForFerre.selectionModel.selectedItems.last().num
                 val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
@@ -362,7 +332,7 @@ class MainWindow: Initializable {
                 val sideLength = ferreClassForMultiDots?.triangleSideLength()
                 println("sideLength = $sideLength")
                 val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
-                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y, number)
+                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y, number, tableForFerre)
                 ferreStageForMultiDots!!.show()
             }
 //            tableForFerre

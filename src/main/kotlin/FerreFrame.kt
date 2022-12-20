@@ -3,6 +3,7 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.Cursor
 import javafx.scene.control.Label
+import javafx.scene.control.TableView
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
@@ -209,14 +210,43 @@ class FerreFrame: Initializable {
 //функция для получения координаты x для заданного y по уравнению прямой
     fun xForY(y: Double, y0: Double, y1: Double, x0: Double, x1: Double) = (y - y1 + x1*(y1-y0)/(x1-x0))/((y1-y0)/(x1-x0))
 
-    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0) { //для перемещения точки
+    fun setDot(place: String, x: Double = 0.0, y: Double = 0.0, number: Int, tableForFerre: TableView<ObjectForFerre>? = null) { //для перемещения точки
 //        println("place = $place x = $x  y = $y")
-//        movingDot.fireEvent(MouseEvent(MouseEvent.MOUSE_DRAGGED, )
         movingDot.layoutX = x
         movingDot.layoutY = y
         curX = x
         curY = y
         moveLinesTo(curX, curY)
+        addTextForDot(number, x, y, movingDot.radius, tableForFerre)
+        movingDot.onMouseClicked = EventHandler<MouseEvent?> {
+//            println("Dot")
+            println("Dot = ${it.source}")
+        }
+    }
+
+    fun addTextForDot(number: Int, x: Double, y: Double, radius: Double, tableForFerre: TableView<ObjectForFerre>?){ //для добавления текста на точку
+        val textForDot = Text(if (number >= 10) (x - radius / 2-3) else  x - radius / 2, y + radius / 2, number.toString())
+        val font = Font( 9.0)
+//        font.set = "-fx-font-color: "
+        textForDot.font = font
+        textForDot.fill = Color.WHITE
+        textForDot.style = "-fx-font-weight: bold"
+        anchorPane.children.add(textForDot)
+        textForDot.onMouseClicked = EventHandler<MouseEvent?> {
+            println("Dot1 text = ${(it.source as Text).text}")
+            tableForFerre?.selectionModel?.clearSelection()
+            tableForFerre?.selectionModel?.select((it.source as Text).text.toInt()-1)
+//            tableForFerre?.setRowFactory { tv ->
+//                val row = TableRow<ObjectForFerre>()
+////                if (row.index.toString() == (it.source as Text).text) {
+//                if (row.index==2) {
+//                    println("row = number")
+//                    row.style = "-fx-background-color: yellow;"
+//                }
+//                return@setRowFactory row
+//            }
+        }
+        textForDot.cursor = Cursor.HAND
     }
 
     private fun checkSoilName() { //для получения почвы для текущей точки
@@ -290,7 +320,7 @@ class FerreFrame: Initializable {
         return s
     }
 
-    fun addDot(x: Double, y: Double, number: Int) {
+    fun addDot(x: Double, y: Double, number: Int, tableForFerre: TableView<ObjectForFerre>) {
         //todo сделать чтобы появлялась надпись при наведении на точку, а при щелчке выделялась строка с объектом
         println("in addDot")
         var newDot = Circle1(number)
@@ -301,28 +331,13 @@ class FerreFrame: Initializable {
         newDot.fill = movingDot.fill
         newDot.layoutX = x
         newDot.layoutY = y
-        val textForDot = Text(if (number >= 10) (x - newDot.radius / 2-3) else  x - newDot.radius / 2, y + newDot.radius / 2, number.toString())
-        val font = Font( 9.0)
-//        font.set = "-fx-font-color: "
-        textForDot.font = font
-        textForDot.fill = Color.WHITE
-        textForDot.style = "-fx-font-weight: bold"
-        anchorPane.children.addAll(newDot, textForDot)
+        anchorPane.children.addAll(newDot)
 
-
-        movingDot.onMouseClicked = EventHandler<MouseEvent?> {
-//            println("Dot")
-            println("Dot = ${it.source}")
-        }
+        addTextForDot(number, x, y, newDot.radius, tableForFerre)
         newDot.onMouseClicked = EventHandler<MouseEvent?> {
-            println("Dot1 = ${(it.source as Circle1).number}")
+            println("Dot1 circle= ${(it.source as Circle1).number}")
         }
-        textForDot.onMouseClicked = EventHandler<MouseEvent?> {
-            println("Dot1 = ${(it.source as Text).text}")
-        }
-        textForDot.cursor = Cursor.HAND
         newDot.cursor = Cursor.HAND
-
     }
 //    fun getAnchopane() = return anchorPane
 }
