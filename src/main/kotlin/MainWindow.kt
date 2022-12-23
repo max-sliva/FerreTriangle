@@ -24,6 +24,7 @@ import java.io.IOException
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -42,6 +43,7 @@ class MainWindow: Initializable {
     var title = ""
     var ferreStageForMultiDots: Stage? = null
     var ferreClassForMultiDots: FerreFrame? = null
+    var arrayOfNums = ArrayList<Int>()
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         println("Started")
 //        title = (mainPane.scene.window as Stage).title
@@ -295,6 +297,7 @@ class MainWindow: Initializable {
           //  }
             if (ferreStageForMultiDots==null) { //если первый раз выбираем элемент в мультирежиме
                 println("ferreStageForMuliDots is null")
+                arrayOfNums.add(tableForFerre.selectionModel.selectedItem.num)
                 val place = tableForFerre.selectionModel.selectedItem.samplePlace
                 val sand = tableForFerre.selectionModel.selectedItem.sand
                 val dust = tableForFerre.selectionModel.selectedItem.dust
@@ -323,16 +326,22 @@ class MainWindow: Initializable {
                 //если окно с таблицей становится активным (в фокусе), то снова выделяем эти строки
                 val textForDot = Text()
                 val number = tableForFerre.selectionModel.selectedItems.last().num
-                val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
-                val sand = tableForFerre.selectionModel.selectedItems.last().sand
-                val dust = tableForFerre.selectionModel.selectedItems.last().dust
-                val mud = tableForFerre.selectionModel.selectedItems.last().mud
-                val result = tableForFerre.selectionModel.selectedItems.last().result
-                println("last place = $place")
-                val sideLength = ferreClassForMultiDots?.triangleSideLength()
-                println("sideLength = $sideLength")
-                val dotOnFerre = dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
-                ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y, number, tableForFerre)
+                if (!arrayOfNums.contains(number)){
+                    arrayOfNums.add(tableForFerre.selectionModel.selectedItem.num)
+                    val place = tableForFerre.selectionModel.selectedItems.last().samplePlace
+                    val sand = tableForFerre.selectionModel.selectedItems.last().sand
+                    val dust = tableForFerre.selectionModel.selectedItems.last().dust
+                    val mud = tableForFerre.selectionModel.selectedItems.last().mud
+                    val result = tableForFerre.selectionModel.selectedItems.last().result
+                    println("last place = $place")
+                    val sideLength = ferreClassForMultiDots?.triangleSideLength()
+                    println("sideLength = $sideLength")
+                    val dotOnFerre =
+                        dotXYfromFerreObject(sand, dust, mud, sideLength!!, ferreClassForMultiDots!!.polygon)
+                    ferreClassForMultiDots!!.addDot(dotOnFerre.x, dotOnFerre.y, number, tableForFerre, arrayOfNums)
+                } else {
+                    ferreClassForMultiDots?.selectDot(number, tableForFerre.selectionModel.selectedItems.last().result)
+                }
                 ferreStageForMultiDots!!.show()
             }
 //            tableForFerre

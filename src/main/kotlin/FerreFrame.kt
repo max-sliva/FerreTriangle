@@ -6,6 +6,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.TableView
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
@@ -17,6 +18,8 @@ import javafx.scene.text.Text
 import java.net.URL
 import java.nio.file.Paths
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -49,6 +52,9 @@ class FerreFrame: Initializable {
     val mudVal = Text()  //текстовое поле со значением глины для текущей точки
     val dustVal = Text() //текстовое поле со значением пыли для текущей точки
     val sandVal = Text() //текстовое поле со значением песка для текущей точки
+    val hashNumText = HashMap<Int, Text>()
+    val hashNumDot = HashMap<Int, Circle>()
+    var arrayOfNums = ArrayList<Int>()
 
     fun mousePressedDot(mouseEvent: MouseEvent) {
         anchorX = mouseEvent.sceneX
@@ -218,6 +224,7 @@ class FerreFrame: Initializable {
         curY = y
         moveLinesTo(curX, curY)
         addTextForDot(number, x, y, movingDot.radius, tableForFerre)
+        hashNumDot[number] = movingDot
         movingDot.onMouseClicked = EventHandler<MouseEvent?> {
 //            println("Dot")
             println("Dot = ${it.source}")
@@ -233,13 +240,28 @@ class FerreFrame: Initializable {
         textForDot.style = "-fx-font-weight: bold"
         anchorPane.children.add(textForDot)
         textForDot.onMouseClicked = EventHandler<MouseEvent?> {
-            println("Dot1 text = ${(it.source as Text).text}")
-            tableForFerre?.selectionModel?.clearSelection()
-            tableForFerre?.selectionModel?.select((it.source as Text).text.toInt()-1)
-            moveLinesTo(x, y)
-            mudVal.text = String.format("%.1f",tableForFerre!!.items[number-1].mud)
-            dustVal.text = String.format("%.1f",tableForFerre!!.items[number-1].dust)
-            sandVal.text = String.format("%.1f",tableForFerre!!.items[number-1].sand)
+            if (it.button == MouseButton.SECONDARY){
+                println("delete")
+                anchorPane.children.remove(textForDot)
+//                val numToDelete = hashNumText.ke
+                anchorPane.children.remove(hashNumDot[number])
+                hashNumText.remove(number)
+                hashNumDot.remove(number)
+                arrayOfNums.remove(number)
+                for (line in arrayOflines){
+                    line.isVisible = false
+                }
+            } else {
+                println("Dot1 text = ${(it.source as Text).text}")
+                tableForFerre?.selectionModel?.clearSelection()
+                tableForFerre?.selectionModel?.select((it.source as Text).text.toInt() - 1)
+                tableForFerre?.scrollTo(tableForFerre.selectionModel.selectedIndex);
+                moveLinesTo(x, y)
+                mudVal.text = String.format("%.1f", tableForFerre!!.items[number - 1].mud)
+                dustVal.text = String.format("%.1f", tableForFerre!!.items[number - 1].dust)
+                sandVal.text = String.format("%.1f", tableForFerre!!.items[number - 1].sand)
+                soilName.text = tableForFerre!!.items[number - 1].result
+            }
 //            tableForFerre?.setRowFactory { tv ->
 //                val row = TableRow<ObjectForFerre>()
 ////                if (row.index.toString() == (it.source as Text).text) {
@@ -252,9 +274,11 @@ class FerreFrame: Initializable {
         }
         textForDot.onMouseEntered = EventHandler {
             println("глина = ${tableForFerre!!.items[number-1].mud} пыль = ${tableForFerre!!.items[number-1].dust} песок = ${tableForFerre!!.items[number-1].sand}")
-
-
         }
+//        textForDot.onMouseClicked = EventHandler {
+//
+//        }
+        hashNumText[number] = textForDot
         textForDot.cursor = Cursor.HAND
     }
 
@@ -286,6 +310,7 @@ class FerreFrame: Initializable {
 
     private fun moveLinesTo(curX: Double, curY: Double){ //для перемещения линий к сторонам от точки
         for (line in arrayOflines){ //проходим по всем отрезкам от точки к сторонам треугольника
+            line.isVisible = true
             line.startX = curX
             line.startY = curY
             if (line == arrayOflines[0]) {
@@ -329,7 +354,8 @@ class FerreFrame: Initializable {
         return s
     }
 
-    fun addDot(x: Double, y: Double, number: Int, tableForFerre: TableView<ObjectForFerre>) {
+    fun addDot(x: Double, y: Double, number: Int, tableForFerre: TableView<ObjectForFerre>, arrayOfNums1: ArrayList<Int>) {
+        arrayOfNums = arrayOfNums1
         println("in addDot")
         var newDot = Circle1(number)
 //        BeanUtils.copyProperties(newDot, movingDot)
@@ -342,10 +368,24 @@ class FerreFrame: Initializable {
         anchorPane.children.addAll(newDot)
 
         addTextForDot(number, x, y, newDot.radius, tableForFerre)
+        hashNumDot[number] = newDot
         newDot.onMouseClicked = EventHandler<MouseEvent?> {
             println("Dot1 circle= ${(it.source as Circle1).number}")
         }
         newDot.cursor = Cursor.HAND
+        moveLinesTo(x, y)
+        mudVal.text = String.format("%.1f",tableForFerre!!.items[number-1].mud)
+        dustVal.text = String.format("%.1f",tableForFerre!!.items[number-1].dust)
+        sandVal.text = String.format("%.1f",tableForFerre!!.items[number-1].sand)
+        soilName.text = tableForFerre!!.items[number-1].result
+    }
+
+    fun selectDot(number: Int, result: String) {
+        println("from selectDot")
+        println("arrayOfNums = ${arrayOfNums.size}")
+        val dot = hashNumText[number]
+        moveLinesTo(dot!!.x, dot!!.y)
+        soilName.text = result
     }
 //    fun getAnchopane() = return anchorPane
 }
