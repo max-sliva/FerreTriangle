@@ -236,6 +236,10 @@ class FerreFrame: Initializable {
             println("Dot1 text = ${(it.source as Text).text}")
             tableForFerre?.selectionModel?.clearSelection()
             tableForFerre?.selectionModel?.select((it.source as Text).text.toInt()-1)
+            moveLinesTo(x, y)
+            mudVal.text = String.format("%.1f",tableForFerre!!.items[number-1].mud)
+            dustVal.text = String.format("%.1f",tableForFerre!!.items[number-1].dust)
+            sandVal.text = String.format("%.1f",tableForFerre!!.items[number-1].sand)
 //            tableForFerre?.setRowFactory { tv ->
 //                val row = TableRow<ObjectForFerre>()
 ////                if (row.index.toString() == (it.source as Text).text) {
@@ -245,6 +249,11 @@ class FerreFrame: Initializable {
 //                }
 //                return@setRowFactory row
 //            }
+        }
+        textForDot.onMouseEntered = EventHandler {
+            println("глина = ${tableForFerre!!.items[number-1].mud} пыль = ${tableForFerre!!.items[number-1].dust} песок = ${tableForFerre!!.items[number-1].sand}")
+
+
         }
         textForDot.cursor = Cursor.HAND
     }
@@ -321,7 +330,6 @@ class FerreFrame: Initializable {
     }
 
     fun addDot(x: Double, y: Double, number: Int, tableForFerre: TableView<ObjectForFerre>) {
-        //todo сделать чтобы появлялась надпись при наведении на точку, а при щелчке выделялась строка с объектом
         println("in addDot")
         var newDot = Circle1(number)
 //        BeanUtils.copyProperties(newDot, movingDot)
